@@ -513,20 +513,48 @@ window.VisitorModule = class VisitorModule {
           </div>
           <div class="space-y-4">
             <div class="paper-card rounded-2xl p-5 bg-[#FFFBF5] border border-[#EADFD0]">
-              <h3 class="font-headline text-base font-medium text-[#450D0D] mb-3">Active Navigation Steps</h3>
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-headline text-base font-medium text-[#450D0D]">Active Navigation Steps</h3>
+                <button onclick="window.app.navigate('visitor-plan-journey')" class="text-[11px] font-label font-bold uppercase text-[#9F3E41] hover:underline">Change Route</button>
+              </div>
               <div id="visitor-live-steps" class="space-y-3 font-body text-xs">
-                <div class="p-3 rounded-lg bg-white border border-[#EADFD0] flex items-center gap-3">
-                  <span class="w-6 h-6 rounded-full bg-[#450D0D] text-white flex items-center justify-center font-bold text-xs">1</span>
-                  <span>Enter via Main Concourse Hall (1 min)</span>
-                </div>
-                <div class="p-3 rounded-lg bg-white border border-[#EADFD0] flex items-center gap-3">
-                  <span class="w-6 h-6 rounded-full bg-[#450D0D] text-white flex items-center justify-center font-bold text-xs">2</span>
-                  <span>Follow Smart Digital Signage towards your hall</span>
-                </div>
-                <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center gap-3 font-bold">
-                  <span class="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs">3</span>
-                  <span>Arrive at Session Room (Present digital QR badge)</span>
-                </div>
+                ${(this.activeJourney && this.activeJourney.steps && this.activeJourney.steps.length) ? this.activeJourney.steps.map((s, idx) => {
+                  const stepNum = typeof s === 'object' ? (s.step || idx + 1) : (idx + 1);
+                  const title   = typeof s === 'object' ? (s.title || `Step ${stepNum}`) : s;
+                  const detail  = typeof s === 'object' ? (s.detail || '') : '';
+                  const isDest  = typeof s === 'object' ? (s.status === 'destination' || idx === this.activeJourney.steps.length - 1) : false;
+                  return `
+                    <div class="p-3 rounded-lg ${isDest ? 'bg-emerald-50 border border-emerald-200 text-emerald-900 font-bold' : 'bg-white border border-[#EADFD0]'} flex items-start gap-3">
+                      <span class="w-6 h-6 rounded-full ${isDest ? 'bg-emerald-700' : 'bg-[#450D0D]'} text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">${stepNum}</span>
+                      <div>
+                        <p class="font-bold text-[#450D0D]">${title}</p>
+                        ${detail ? `<p class="text-[11px] text-[#827473] font-normal mt-0.5">${detail}</p>` : ''}
+                      </div>
+                    </div>
+                  `;
+                }).join('') : `
+                  <div class="p-3 rounded-lg bg-white border border-[#EADFD0] flex items-start gap-3">
+                    <span class="w-6 h-6 rounded-full bg-[#450D0D] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">1</span>
+                    <div>
+                      <p class="font-bold text-[#450D0D]">Check in at Gate Entry</p>
+                      <p class="text-[11px] text-[#827473] mt-0.5">Scan digital QR pass at turnstile display</p>
+                    </div>
+                  </div>
+                  <div class="p-3 rounded-lg bg-white border border-[#EADFD0] flex items-start gap-3">
+                    <span class="w-6 h-6 rounded-full bg-[#450D0D] text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">2</span>
+                    <div>
+                      <p class="font-bold text-[#450D0D]">Follow Smart Indoor Markers</p>
+                      <p class="text-[11px] text-[#827473] mt-0.5">Dynamic crowd-balanced corridor routing</p>
+                    </div>
+                  </div>
+                  <div class="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-start gap-3 font-bold">
+                    <span class="w-6 h-6 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs shrink-0 mt-0.5">3</span>
+                    <div>
+                      <p class="font-bold text-emerald-900">Arrive at Session Room</p>
+                      <p class="text-[11px] text-emerald-700 font-normal mt-0.5">Present digital badge for seat access</p>
+                    </div>
+                  </div>
+                `}
               </div>
             </div>
             <div id="zone-crowd-panel" class="paper-card rounded-2xl p-5 bg-white border border-[#EADFD0]">

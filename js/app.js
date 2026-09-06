@@ -530,6 +530,12 @@ window.EventosApp = class EventosApp {
 
     try {
       const res = await window.EventosAPI.registerUser(payload);
+      if (res && res.event) {
+        const currentEvents = this.state.userEvents || [];
+        const updatedEvents = [res.event, ...currentEvents.filter(e => e.id !== res.event.id)];
+        this.setState('userEvents', updatedEvents);
+        this.setState('activeEventId', res.event.id);
+      }
       this.toast(`Registration successful for ${payload.name}! Please sign in.`, 'info');
 
       // Seamlessly transition to Login page prefilling email

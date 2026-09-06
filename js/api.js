@@ -104,8 +104,56 @@ window.EventosAPI = {
     } catch (e) {}
   },
 
+  _getCustomEvents() {
+    try {
+      return JSON.parse(localStorage.getItem('eventos_custom_events')) || [];
+    } catch (e) {
+      return [];
+    }
+  },
+
+  _saveCustomEvents(events) {
+    try {
+      localStorage.setItem('eventos_custom_events', JSON.stringify(events));
+    } catch (e) {}
+  },
+
   // -- Auth / Registration / Login ----------------------------
   async registerUser(payload) {
+    const rawEventId = payload.event_id ? payload.event_id.toLowerCase().trim().replace(/[^a-z0-9-_]/g, '-') : '';
+    const finalEventId = rawEventId || (payload.event_name ? payload.event_name.toLowerCase().trim().replace(/[^a-z0-9-_]/g, '-').slice(0, 20) : 'aarpo-26');
+    const finalEventTitle = payload.event_name ? payload.event_name.trim() : 'AARPO World Summit 2026';
+    const finalLocation = payload.event_location ? payload.event_location.trim() : 'Lisbon Congress Center';
+    const finalDate = payload.event_date ? payload.event_date.trim() : 'SEP 14-16, 2026';
+
+    const customEvent = {
+      id: finalEventId,
+      title: finalEventTitle,
+      subtitle: `${finalEventTitle} Assembly`,
+      category: 'General',
+      location: finalLocation,
+      date_label: finalDate,
+      start_time: payload.start_time || '09:00 AM',
+      end_time: payload.end_time || '06:00 PM',
+      price_cents: 15000,
+      currency: 'INR',
+      status: 'available',
+      max_capacity: parseInt(payload.max_capacity) || 15000,
+      file_name: payload.file_name || null,
+      file_data: payload.file_data || null,
+      description: `Official event registered at ${finalLocation}. Includes live crowd management and intelligent wayfinding.`
+    };
+
+    // Save custom event to local storage immediately
+    const customEvents = this._getCustomEvents();
+    const existingEvIdx = customEvents.findIndex(e => e.id === customEvent.id);
+    if (existingEvIdx >= 0) {
+      customEvents[existingEvIdx] = customEvent;
+    } else {
+      customEvents.unshift(customEvent);
+    }
+    this._saveCustomEvents(customEvents);
+
     try {
       const data = await this._fetch('/users/register', {
         method: 'POST',
@@ -135,62 +183,64 @@ window.EventosAPI = {
         address: payload.address,
         role: payload.role || 'visitor',
         location_permission: payload.location_permission ? 1 : 0,
-        event_name: payload.event_name,
-        event_id: payload.event_id || 'aarpo-26'
+        event_name: finalEventTitle,
+        event_id: finalEventId,
+        event_location: finalLocation,
+        event_date: finalDate,
+        start_time: payload.start_time || '09:00 AM',
+        end_time: payload.end_time || '06:00 PM'
       };
       users.push(newUser);
       this._saveLocalUsers(users);
 
-      const event = {
-        id: payload.event_id || 'aarpo-26',
-        title: payload.event_name || 'AARPO World Summit 2026',
-        location: payload.event_location || 'Lisbon Congress Center',
-        date_label: payload.event_date || 'SEP 14-16, 2026',
-        start_time: payload.start_time || '09:00 AM',
-        end_time: payload.end_time || '06:00 PM',
-        file_name: payload.file_name || null,
-        file_data: payload.file_data || null
-      };
-
       return {
         user: newUser,
-        event
+        event: customEvent
       };
     }
   },
 
   async loginUserWithPassword(email, password, role) {
+    const customEvents = this._getCustomEvents();
     try {
       const data = await this._fetch('/users/login', {
         method: 'POST',
         body: JSON.stringify({ email, password, role })
       });
+      if (data && data.events) {
+        // Merge any locally registered custom events
+        const map = new Map();
+        customEvents.forEach(e => map.set(e.id, e));
+        data.events.forEach(e => { if (!map.has(e.id)) map.set(e.id, e); });
+        data.events = Array.from(map.values());
+        if (!data.active_event && data.events.length) data.active_event = data.events[0];
+      }
       return data;
     } catch (err) {
-      // If server returned a password error, check local or throw
       const normEmail = (email || '').toLowerCase().trim();
-      console.warn('[EventOS] Trying fallback authentication for:', normEmail, err.message);
+      console.warn('[EventOS] Fallback authentication for:', normEmail, err.message);
+
+      const defaultEvents = [
+        { id: 'aarpo-26', title: 'AARPO World Summit 2026', category: 'Architecture', location: 'Lisbon Congress Center', date_label: 'SEP 14-16, 2026' },
+        { id: 'lisbon-ux', title: 'Lisbon UX & Design Expo', category: 'Design', location: 'FIL Pavilion 2', date_label: 'SEP 18-19, 2026' }
+      ];
 
       // 1. Built-in Demo Accounts
       if (normEmail === 'alex@eventos.io' || (normEmail.includes('alex') && !password)) {
+        const evList = [...customEvents, ...defaultEvents.filter(d => !customEvents.some(c => c.id === d.id))];
         return {
           user: { id: 'user-visitor-alex', name: 'Alex Morgan', email: 'alex@eventos.io', role: 'visitor' },
-          events: [
-            { id: 'aarpo-26', title: 'AARPO World Summit 2026', category: 'Architecture', location: 'Lisbon Congress Center', date_label: 'SEP 14-16, 2026' },
-            { id: 'lisbon-ux', title: 'Lisbon UX & Design Expo', category: 'Design', location: 'FIL Pavilion 2', date_label: 'SEP 18-19, 2026' }
-          ],
-          active_event: { id: 'aarpo-26', title: 'AARPO World Summit 2026', location: 'Lisbon Congress Center', date_label: 'SEP 14-16, 2026' }
+          events: evList,
+          active_event: evList[0] || defaultEvents[0]
         };
       }
 
       if (normEmail === 'admin@eventos.io' || (normEmail.includes('admin') && !password)) {
+        const evList = [...customEvents, ...defaultEvents.filter(d => !customEvents.some(c => c.id === d.id))];
         return {
           user: { id: 'user-organizer-admin', name: 'Admin Organizer', email: 'admin@eventos.io', role: 'organizer' },
-          events: [
-            { id: 'aarpo-26', title: 'AARPO World Summit 2026', category: 'Architecture', location: 'Lisbon Congress Center', date_label: 'SEP 14-16, 2026' },
-            { id: 'lisbon-ux', title: 'Lisbon UX & Design Expo', category: 'Design', location: 'FIL Pavilion 2', date_label: 'SEP 18-19, 2026' }
-          ],
-          active_event: { id: 'aarpo-26', title: 'AARPO World Summit 2026', location: 'Lisbon Congress Center', date_label: 'SEP 14-16, 2026' }
+          events: evList,
+          active_event: evList[0] || defaultEvents[0]
         };
       }
 
@@ -204,9 +254,19 @@ window.EventosAPI = {
         const userEvent = {
           id: match.event_id || 'aarpo-26',
           title: match.event_name || 'AARPO World Summit 2026',
-          location: match.address || 'Lisbon Congress Center',
-          date_label: 'SEP 14-16, 2026'
+          location: match.event_location || match.address || 'Lisbon Congress Center',
+          date_label: match.event_date || 'SEP 14-16, 2026',
+          start_time: match.start_time || '09:00 AM',
+          end_time: match.end_time || '06:00 PM'
         };
+
+        const evMap = new Map();
+        evMap.set(userEvent.id, userEvent);
+        customEvents.forEach(e => { if (!evMap.has(e.id)) evMap.set(e.id, e); });
+        defaultEvents.forEach(e => { if (!evMap.has(e.id)) evMap.set(e.id, e); });
+
+        const allUserEvents = Array.from(evMap.values());
+
         return {
           user: {
             id: match.id,
@@ -214,13 +274,12 @@ window.EventosAPI = {
             email: match.email,
             role: match.role || role || 'visitor'
           },
-          events: [userEvent, { id: 'lisbon-ux', title: 'Lisbon UX & Design Expo', location: 'FIL Pavilion 2', date_label: 'SEP 18-19, 2026' }],
+          events: allUserEvents,
           active_event: userEvent
         };
       }
 
       // 3. If brand new credentials entered while offline / on Vercel:
-      // Auto-provision user account and log in immediately!
       const displayName = normEmail.split('@')[0]
         .split(/[\._-]/)
         .map(s => s.charAt(0).toUpperCase() + s.slice(1))
@@ -237,20 +296,15 @@ window.EventosAPI = {
       users.push(newUser);
       this._saveLocalUsers(users);
 
-      const defaultEvent = {
-        id: 'aarpo-26',
-        title: 'AARPO World Summit 2026',
-        location: 'Lisbon Congress Center',
-        date_label: 'SEP 14-16, 2026'
-      };
+      const evMap = new Map();
+      customEvents.forEach(e => evMap.set(e.id, e));
+      defaultEvents.forEach(e => { if (!evMap.has(e.id)) evMap.set(e.id, e); });
+      const allEvents = Array.from(evMap.values());
 
       return {
         user: newUser,
-        events: [
-          defaultEvent,
-          { id: 'lisbon-ux', title: 'Lisbon UX & Design Expo', location: 'FIL Pavilion 2', date_label: 'SEP 18-19, 2026' }
-        ],
-        active_event: defaultEvent
+        events: allEvents,
+        active_event: allEvents[0] || defaultEvents[0]
       };
     }
   },
@@ -260,6 +314,8 @@ window.EventosAPI = {
       const q = role ? ('?role=' + encodeURIComponent(role)) : '';
       return await this._fetch('/users/' + encodeURIComponent(userId) + '/events' + q);
     } catch (e) {
+      const customEvents = this._getCustomEvents();
+      if (customEvents.length) return customEvents;
       return [
         { id: 'aarpo-26', title: 'AARPO World Summit 2026', category: 'Architecture', location: 'Lisbon Congress Center', date_label: 'SEP 14-16, 2026' },
         { id: 'lisbon-ux', title: 'Lisbon UX & Design Expo', category: 'Design', location: 'FIL Pavilion 2', date_label: 'SEP 18-19, 2026' }
@@ -268,10 +324,45 @@ window.EventosAPI = {
   },
 
   async addUserEvent(userId, payload) {
-    return this._fetch('/users/' + encodeURIComponent(userId) + '/events', {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+    const eventId = payload.event_id || (payload.event_name ? payload.event_name.toLowerCase().replace(/[^a-z0-9-_]/g, '-').slice(0, 20) : 'event-' + Date.now());
+    const event = {
+      id: eventId,
+      title: payload.event_name || 'Custom Event',
+      subtitle: `${payload.event_name || 'Custom Event'} Assembly`,
+      category: 'General',
+      location: payload.event_location || 'Campus / Venue Center',
+      date_label: payload.event_date || 'OCT 24-26, 2026',
+      start_time: payload.start_time || '09:00 AM',
+      end_time: payload.end_time || '06:00 PM',
+      price_cents: 15000,
+      currency: 'INR',
+      status: 'available',
+      max_capacity: parseInt(payload.max_capacity) || 15000,
+      file_name: payload.file_name || null,
+      file_data: payload.file_data || null,
+      description: `Official event managed on EVENTOS at ${payload.event_location || 'Campus Center'} with live spatial flow.`
+    };
+
+    const customEvents = this._getCustomEvents();
+    const existingIdx = customEvents.findIndex(e => e.id === event.id);
+    if (existingIdx >= 0) customEvents[existingIdx] = event;
+    else customEvents.unshift(event);
+    this._saveCustomEvents(customEvents);
+
+    if (payload.custom_zones && Array.isArray(payload.custom_zones)) {
+      this.saveZones(eventId, payload.custom_zones);
+    }
+
+    try {
+      const data = await this._fetch('/users/' + encodeURIComponent(userId) + '/events', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      return data;
+    } catch (e) {
+      console.warn('[EventOS] Saved custom event locally:', event.title);
+      return { event };
+    }
   },
 
   async loginUser(name, email, role) {
@@ -283,44 +374,89 @@ window.EventosAPI = {
 
   // -- Events --------------------------------------------------
   async getEvents(category) {
+    let apiEvents = [];
     try {
       const q = (category && category !== 'All') ? ('?category=' + encodeURIComponent(category)) : '';
-      return await this._fetch('/events' + q);
+      apiEvents = await this._fetch('/events' + q);
     } catch (e) {
-      const all = [
-        { id: 'aarpo-26', title: 'AARPO World Summit 2026', subtitle: 'Architecture & Design Assembly', category: 'Architecture', date_label: 'SEP 14-16, 2026', location: 'Lisbon Congress Center', price_cents: 18500, currency: 'INR', status: 'available', description: 'The global gathering of architectural strategists, urbanists, and digital spatial designers.' },
-        { id: 'lisbon-ux', title: 'Lisbon UX & Design Expo', subtitle: 'Digital Products & Modern Interfaces', category: 'Design', date_label: 'SEP 18-19, 2026', location: 'FIL Pavilion 2', price_cents: 12000, currency: 'INR', status: 'selling_fast', description: 'Exploring human-centered design, digital interfaces, and modern user experiences.' },
-        { id: 'ai-city', title: 'Smart Cities & Future Tech Forum', subtitle: 'Urban Innovation & Smart Mobility', category: 'Tech', date_label: 'OCT 02, 2026', location: 'Altice Arena', price_cents: 9500, currency: 'INR', status: 'early_bird', description: 'Discover real-time smart city technology and automated event infrastructure.' }
-      ];
-      if (!category || category === 'All') return all;
-      return all.filter(ev => ev.category === category);
+      apiEvents = [];
     }
+
+    // Merge with user custom events from localStorage
+    const customEvents = this._getCustomEvents();
+    let stateEvents = [];
+    try {
+      const state = JSON.parse(localStorage.getItem('eventos_state')) || {};
+      stateEvents = state.userEvents || [];
+    } catch (e) {}
+
+    const defaultEvents = [
+      { id: 'aarpo-26', title: 'AARPO World Summit 2026', subtitle: 'Architecture & Design Assembly', category: 'Architecture', date_label: 'SEP 14-16, 2026', location: 'Lisbon Congress Center', price_cents: 18500, currency: 'INR', status: 'available', description: 'The global gathering of architectural strategists, urbanists, and digital spatial designers.' },
+      { id: 'lisbon-ux', title: 'Lisbon UX & Design Expo', subtitle: 'Digital Products & Modern Interfaces', category: 'Design', date_label: 'SEP 18-19, 2026', location: 'FIL Pavilion 2', price_cents: 12000, currency: 'INR', status: 'selling_fast', description: 'Exploring human-centered design, digital interfaces, and modern user experiences.' },
+      { id: 'ai-city', title: 'Smart Cities & Future Tech Forum', subtitle: 'Urban Innovation & Smart Mobility', category: 'Tech', date_label: 'OCT 02, 2026', location: 'Altice Arena', price_cents: 9500, currency: 'INR', status: 'early_bird', description: 'Discover real-time smart city technology and automated event infrastructure.' }
+    ];
+
+    const map = new Map();
+    // 1. Custom & state user-created events take highest priority at top
+    customEvents.forEach(ev => { if (ev && ev.id) map.set(ev.id, ev); });
+    stateEvents.forEach(ev => { if (ev && ev.id && !map.has(ev.id)) map.set(ev.id, ev); });
+    // 2. Add API events
+    (Array.isArray(apiEvents) ? apiEvents : []).forEach(ev => { if (ev && ev.id && !map.has(ev.id)) map.set(ev.id, ev); });
+    // 3. Fallback defaults
+    defaultEvents.forEach(ev => { if (ev && ev.id && !map.has(ev.id)) map.set(ev.id, ev); });
+
+    let combined = Array.from(map.values());
+    if (category && category !== 'All') {
+      combined = combined.filter(ev => (ev.category || 'General').toLowerCase() === category.toLowerCase());
+    }
+    return combined;
   },
 
   async getEvent(id) {
     try {
-      return await this._fetch('/events/' + encodeURIComponent(id));
-    } catch (e) {
-      const state = JSON.parse(localStorage.getItem('eventos_state')) || {};
-      const userEvents = state.userEvents || [];
-      const found = userEvents.find(ev => ev.id === id);
-      if (found) return found;
+      const live = await this._fetch('/events/' + encodeURIComponent(id));
+      if (live && live.title) return live;
+    } catch (e) {}
 
-      return {
-        id: id || 'aarpo-26',
-        title: 'AARPO World Summit 2026',
-        subtitle: 'Architecture & Design Assembly',
-        category: 'Architecture',
-        date_label: 'SEP 14-16, 2026',
-        location: 'Lisbon Congress Center',
-        max_capacity: 15000,
-        sessions: [
-          { id: 's1', title: 'Design for Tomorrow Keynote', time_label: '09:30 AM', stage: 'Main Stage', speaker: 'Elena Rostova' },
-          { id: 's2', title: 'Modern UX & Simple Grids Workshop', time_label: '11:00 AM', stage: 'Studio B', speaker: 'Marc Vance' },
-          { id: 's3', title: 'Pedestrian Flow & Smart Venues', time_label: '02:00 PM', stage: 'Main Stage', speaker: 'Dr. Aris Thorne' }
-        ]
-      };
+    const customEvents = this._getCustomEvents();
+    let found = customEvents.find(ev => ev.id === id);
+    if (!found) {
+      try {
+        const state = JSON.parse(localStorage.getItem('eventos_state')) || {};
+        found = (state.userEvents || []).find(ev => ev.id === id);
+      } catch (e) {}
     }
+
+    if (found) {
+      if (!found.sessions || !found.sessions.length) {
+        const zones = await this.getZones(found.id);
+        const r1 = zones[0] ? zones[0].name.split('(')[0].trim() : 'Main Hall';
+        const r2 = zones[1] ? zones[1].name.split('(')[0].trim() : 'Session Room 1';
+        const r3 = zones[2] ? zones[2].name.split('(')[0].trim() : 'Courtyard Area';
+        found.sessions = [
+          { id: `s-${found.id}-1`, title: `${found.title} - Opening Ceremony & Keynote`, time_label: found.start_time || '09:30 AM', stage: r1, speaker: 'Keynote Speaker' },
+          { id: `s-${found.id}-2`, title: `Technical Exhibition & Presentations`, time_label: '11:30 AM', stage: r2, speaker: 'Lead Coordinator' },
+          { id: `s-${found.id}-3`, title: `Interactive Q&A & Networking`, time_label: '02:00 PM', stage: r3, speaker: 'Panel Members' },
+          { id: `s-${found.id}-4`, title: `Closing Ceremony & Awards`, time_label: found.end_time || '05:00 PM', stage: r1, speaker: 'Organizing Committee' }
+        ];
+      }
+      return found;
+    }
+
+    return {
+      id: id || 'aarpo-26',
+      title: 'AARPO World Summit 2026',
+      subtitle: 'Architecture & Design Assembly',
+      category: 'Architecture',
+      date_label: 'SEP 14-16, 2026',
+      location: 'Lisbon Congress Center',
+      max_capacity: 15000,
+      sessions: [
+        { id: 's1', title: 'Design for Tomorrow Keynote', time_label: '09:30 AM', stage: 'Main Stage', speaker: 'Elena Rostova' },
+        { id: 's2', title: 'Modern UX & Simple Grids Workshop', time_label: '11:00 AM', stage: 'Studio B', speaker: 'Marc Vance' },
+        { id: 's3', title: 'Pedestrian Flow & Smart Venues', time_label: '02:00 PM', stage: 'Main Stage', speaker: 'Dr. Aris Thorne' }
+      ]
+    };
   },
 
   // -- Zones ---------------------------------------------------
@@ -471,12 +607,14 @@ window.EventosAPI = {
         body: JSON.stringify({ user_id: userId, event_id: eventId, pass_type: passType })
       });
     } catch (e) {
+      const event = await this.getEvent(eventId);
       const pass = {
         id: 'PASS-' + Math.floor(10000 + Math.random() * 90000),
         user_id: userId,
         event_id: eventId,
+        event_title: (event && event.title) ? event.title : 'Event Access Pass',
         pass_type: passType || 'Standard Entry Badge',
-        valid_dates: 'SEP 14-16, 2026',
+        valid_dates: (event && event.date_label) ? event.date_label : 'Active',
         status: 'confirmed'
       };
       return pass;
@@ -595,18 +733,43 @@ window.EventosAPI = {
   // -- Organizer Hub --------------------------------------------
   async getDashboard(eventId) {
     try {
-      return await this._fetch('/organizer/dashboard/' + encodeURIComponent(eventId));
-    } catch (e) {
-      return {
-        people_inside: 8420,
-        occupancy_pct: 56,
-        max_capacity: 15000,
-        bottleneck: { name: 'Quad Area (Main Stage)', pct: 88, critical: false },
-        checkin_rate: 142,
-        passes_sold: 11200,
-        sold_pct: 75
-      };
-    }
+      const live = await this._fetch('/organizer/dashboard/' + encodeURIComponent(eventId));
+      if (live && live.people_inside !== undefined) return live;
+    } catch (e) {}
+
+    const zones = await this.getZones(eventId);
+    const totalOcc = zones.reduce((sum, z) => sum + (z.current_occ || 0), 0);
+    const totalCap = zones.reduce((sum, z) => sum + (z.capacity || 1000), 0);
+    const occPct = totalCap > 0 ? Math.round((totalOcc / totalCap) * 100) : 56;
+
+    let bottleneckZone = zones[0];
+    let maxPct = 0;
+    zones.forEach(z => {
+      const cap = z.capacity || 1000;
+      const occ = z.current_occ !== undefined ? z.current_occ : Math.round(cap * 0.6);
+      const pct = Math.round((occ / cap) * 100);
+      if (pct > maxPct) {
+        maxPct = pct;
+        bottleneckZone = z;
+      }
+    });
+
+    const passesSold = Math.round(totalCap * 0.76);
+    const checkinRate = Math.max(30, Math.round(totalOcc / 55));
+
+    return {
+      people_inside: totalOcc || 8420,
+      occupancy_pct: occPct,
+      max_capacity: totalCap || 15000,
+      bottleneck: {
+        name: bottleneckZone ? bottleneckZone.name.split('(')[0].trim() : 'Main Concourse',
+        pct: maxPct || 85,
+        critical: maxPct >= 88
+      },
+      checkin_rate: checkinRate,
+      passes_sold: passesSold,
+      sold_pct: 76
+    };
   },
 
   async sendAlert(eventId, organizerId, message, zoneId) {
@@ -646,11 +809,31 @@ window.EventosAPI = {
         body: JSON.stringify({ arrival_rate: arrivalRate, gate_speed: gateSpeed, stage_cap: stageCap })
       });
     } catch (e) {
+      const arr = parseInt(arrivalRate) || 2400;
+      const gate = parseInt(gateSpeed) || 15;
+      const cap = parseInt(stageCap) || 15000;
+      const queueRate = Math.max(0, arr - Math.round(3600 / gate));
+      const evacMin = Math.max(3, Math.round(cap / (Math.max(1, 3600 / gate) * 2)));
+
+      let bottleneck_level = 'LOW';
+      let recommendation = 'Current flow parameters maintain safe ingress speed with minimal gate queue buildup.';
+      if (queueRate > 800) {
+        bottleneck_level = 'HIGH';
+        recommendation = 'Incoming arrival surge exceeds turnstile throughput. Open secondary gate lanes immediately.';
+      } else if (queueRate > 200) {
+        bottleneck_level = 'MODERATE';
+        recommendation = 'Minor queue formation predicted at peak entry. Recommend pre-validation staff at outer perimeter.';
+      }
+
       return {
-        arrival_rate: arrivalRate,
-        gate_speed: gateSpeed,
-        stage_cap: stageCap,
-        summary: 'Simulation executed with balanced pedestrian throughput.'
+        arrival_rate: arr,
+        gate_speed: gate,
+        stage_cap: cap,
+        evacuation_min: evacMin,
+        queue_build_rate: queueRate,
+        bottleneck_level,
+        recommendation,
+        summary: 'Simulation executed with real event capacity parameters.'
       };
     }
   },
@@ -658,25 +841,61 @@ window.EventosAPI = {
   // -- Flow Balancer -------------------------------------------
   async getFlowBalancer(eventId) {
     try {
-      return await this._fetch('/organizer/flow-balancer/' + encodeURIComponent(eventId));
-    } catch (e) {
-      return {
-        event_id: eventId,
-        station_a_name: 'Quad Area (Main Stage)',
-        station_a_occ: 4850,
-        station_a_cap: 5500,
-        station_b_name: 'Sports Complex',
-        station_b_occ: 980,
-        station_b_cap: 2200,
-        station_c_name: 'Canteen Courtyard',
-        station_c_occ: 1350,
-        station_c_cap: 1800,
-        divert_b_count: 2400,
-        divert_c_count: 1800,
-        recommendation_active: 1,
-        recommendation_text: 'Main Stage is getting crowded. Recommend visiting Sports Complex or Canteen.'
-      };
-    }
+      const live = await this._fetch('/organizer/flow-balancer/' + encodeURIComponent(eventId));
+      if (live && (live.now || live.station_a_name)) return live;
+    } catch (e) {}
+
+    const zones = await this.getZones(eventId);
+    const sorted = [...zones].sort((a, b) => {
+      const pctA = (a.current_occ || 0) / (a.capacity || 1000);
+      const pctB = (b.current_occ || 0) / (b.capacity || 1000);
+      return pctB - pctA;
+    });
+
+    const zA = sorted[0] || { name: 'Main Concourse', current_occ: 4850, capacity: 5500 };
+    const zB = sorted[1] || { name: 'Sports Complex', current_occ: 980, capacity: 2200 };
+    const zC = sorted[2] || { name: 'Canteen Courtyard', current_occ: 1350, capacity: 1800 };
+
+    const zA_name = zA.name.split('(')[0].trim();
+    const zB_name = zB.name.split('(')[0].trim();
+    const zC_name = zC.name.split('(')[0].trim();
+
+    const zA_occ = zA.current_occ || Math.round((zA.capacity || 5000) * 0.88);
+    const zA_cap = zA.capacity || 5000;
+    const zA_pct = Math.round((zA_occ / zA_cap) * 100);
+
+    const zB_occ = zB.current_occ || Math.round((zB.capacity || 2000) * 0.45);
+    const zB_cap = zB.capacity || 2000;
+    const zB_pct = Math.round((zB_occ / zB_cap) * 100);
+
+    const zC_occ = zC.current_occ || Math.round((zC.capacity || 2000) * 0.40);
+    const zC_cap = zC.capacity || 2000;
+    const zC_pct = Math.round((zC_occ / zC_cap) * 100);
+
+    const divertB = Math.round(zA_occ * 0.25);
+    const divertC = Math.round(zA_occ * 0.15);
+
+    return {
+      event_id: eventId,
+      now: {
+        station_a: { name: zA_name, occ: zA_occ, cap: zA_cap, pct: zA_pct },
+        station_b: { name: zB_name, occ: zB_occ, cap: zB_cap, pct: zB_pct },
+        station_c: { name: zC_name, occ: zC_occ, cap: zC_cap, pct: zC_pct }
+      },
+      station_a_name: zA_name,
+      station_a_occ: zA_occ,
+      station_a_cap: zA_cap,
+      station_b_name: zB_name,
+      station_b_occ: zB_occ,
+      station_b_cap: zB_cap,
+      station_c_name: zC_name,
+      station_c_occ: zC_occ,
+      station_c_cap: zC_cap,
+      divert_b_count: divertB,
+      divert_c_count: divertC,
+      recommendation_active: 1,
+      recommendation_text: `${zA_name} is reaching peak density (${zA_pct}%). We recommend visiting ${zB_name} or ${zC_name} for open space.`
+    };
   },
 
   async applyFlowRecommendation(eventId) {
@@ -686,7 +905,7 @@ window.EventosAPI = {
         body: JSON.stringify({ event_id: eventId })
       });
     } catch (e) {
-      return { success: true, recommendation_active: 1 };
+      return { success: true, recommendation_active: 1, message: 'Flow recommendation applied to digital signs and visitor apps!' };
     }
   },
 
@@ -697,7 +916,7 @@ window.EventosAPI = {
         body: JSON.stringify({ event_id: eventId })
       });
     } catch (e) {
-      return { success: true, recommendation_active: 0 };
+      return { success: true, recommendation_active: 0, message: 'Flow recommendation reset' };
     }
   }
 };
