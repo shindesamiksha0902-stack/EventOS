@@ -762,10 +762,17 @@ window.EventosApp = class EventosApp {
     }
 
     if (rightActions) {
+      const nextRoleLabel = role === 'organizer' ? 'Visitor View' : 'Organizer Hub';
+      const nextRoleIcon  = role === 'organizer' ? 'person' : 'analytics';
       rightActions.innerHTML = `
         <button onclick="window.app.showApiSettingsModal ? window.app.showApiSettingsModal() : null" class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer" title="Click to view or change Backend API URL">
           <div id="api-live-dot" class="w-2 h-2 rounded-full ${window.EventosAPI && window.EventosAPI.isLive ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}"></div>
           <span id="api-live-label" class="text-[10px] font-label uppercase font-bold text-[#827473]">${window.EventosAPI && window.EventosAPI.isLive ? 'Live' : 'API'}</span>
+        </button>
+        <!-- Switch Mode Button -->
+        <button onclick="window.app.toggleRole()" class="text-xs font-label uppercase font-bold text-[#450D0D] hover:text-[#9F3E41] flex items-center gap-1 border border-[#EADFD0] px-3 py-1.5 rounded-lg bg-[#FFFBF5] hover:bg-white transition-all shadow-2xs" title="Switch between Visitor & Organizer Mode">
+          <span class="material-symbols-outlined text-sm text-[#9F3E41]">swap_horiz</span>
+          <span>${nextRoleLabel}</span>
         </button>
         <button onclick="window.app.logout()" class="hidden md:flex text-xs font-label uppercase font-bold text-[#9F3E41] hover:text-[#450D0D] items-center gap-1 border border-[#EADFD0] px-3 py-1.5 rounded-lg bg-white shadow-2xs" title="Sign out / Switch account">
           <span>Sign Out</span>
@@ -940,6 +947,17 @@ window.EventosApp = class EventosApp {
           ${links}
         </div>
 
+        <!-- Quick Switch Role Action -->
+        <div class="pt-2">
+          <button onclick="window.app.toggleRole(); window.app.closeMobileMenu();" class="w-full text-left py-2.5 px-3 rounded-xl flex items-center justify-between font-label font-bold text-xs uppercase bg-[#FFFBF5] border border-[#EADFD0] text-[#450D0D] hover:bg-white transition-colors">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#9F3E41] text-base">swap_horiz</span>
+              <span>Switch to ${role === 'organizer' ? 'Visitor Mode' : 'Organizer Mode'}</span>
+            </div>
+            <span class="text-[10px] text-[#9F3E41] font-bold">Switch →</span>
+          </button>
+        </div>
+
         <!-- Sign Out & Settings -->
         <div class="pt-3 border-t border-[#EADFD0] flex items-center justify-between">
           <button onclick="window.app.showApiSettingsModal(); window.app.closeMobileMenu();" class="text-xs font-label font-bold text-[#827473] hover:text-[#450D0D] flex items-center gap-1.5 py-1">
@@ -953,6 +971,19 @@ window.EventosApp = class EventosApp {
         </div>
       </div>
     `;
+  }
+
+  toggleRole() {
+    const current = this.getState('role') || 'visitor';
+    const nextRole = current === 'organizer' ? 'visitor' : 'organizer';
+    this.setState('role', nextRole);
+    this.toast(`Switched to ${nextRole === 'organizer' ? 'Organizer Mode' : 'Visitor Mode'}`);
+    this.updateHeader();
+    if (nextRole === 'organizer') {
+      this.navigate('organizer-overview');
+    } else {
+      this.navigate('visitor-find');
+    }
   }
 
   logout() {

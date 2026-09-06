@@ -48,24 +48,21 @@ window.SpatialMapEngine = class SpatialMapEngine {
 
     const imgSrc = (event && event.file_data && event.file_data.startsWith('data:image'))
       ? event.file_data
-      : (isPillaiOrBlueprint ? 'blueprint_ground_floor.jpg' : null);
+      : 'blueprint_ground_floor.jpg';
 
-    if (imgSrc) {
-      this.blueprintImg = new Image();
-      this.blueprintImg.crossOrigin = 'anonymous';
-      this.blueprintImg.onload = () => {
-        this.hasBlueprint = true;
-      };
-      this.blueprintImg.onerror = () => {
-        if (imgSrc !== 'blueprint_ground_floor.jpg') {
-          this.blueprintImg.src = 'blueprint_ground_floor.jpg';
-        }
-      };
-      this.blueprintImg.src = imgSrc;
-    } else {
-      this.hasBlueprint = false;
-      this.blueprintImg = null;
-    }
+    this.blueprintImg = new Image();
+    this.blueprintImg.crossOrigin = 'anonymous';
+    this.blueprintImg.onload = () => {
+      this.hasBlueprint = true;
+    };
+    this.blueprintImg.onerror = () => {
+      if (imgSrc !== 'blueprint_ground_floor.jpg') {
+        this.blueprintImg.src = 'blueprint_ground_floor.jpg';
+      } else {
+        this.hasBlueprint = false;
+      }
+    };
+    this.blueprintImg.src = imgSrc;
 
     // Load zones from API
     try {

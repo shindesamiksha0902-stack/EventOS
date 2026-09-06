@@ -289,18 +289,19 @@ window.OrganizerModule = class OrganizerModule {
   }
 
   setMapStyle(style) {
-    if (this._mapEngine && typeof this._mapEngine.setViewStyle === 'function') {
-      this._mapEngine.setViewStyle(style);
-      const bpBtn = document.getElementById('map-mode-bp');
-      const gridBtn = document.getElementById('map-mode-grid');
-      if (bpBtn && gridBtn) {
-        if (style === 'blueprint') {
-          bpBtn.className = 'px-3 py-1 rounded bg-[#450D0D] text-white font-bold transition-all';
-          gridBtn.className = 'px-3 py-1 rounded text-[#827473] hover:text-[#450D0D] font-bold transition-all';
-        } else {
-          gridBtn.className = 'px-3 py-1 rounded bg-[#450D0D] text-white font-bold transition-all';
-          bpBtn.className = 'px-3 py-1 rounded text-[#827473] hover:text-[#450D0D] font-bold transition-all';
-        }
+    const engine = this._mapEngine || window._activeSpatialEngine;
+    if (engine && typeof engine.setViewStyle === 'function') {
+      engine.setViewStyle(style);
+    }
+    const bpBtn = document.getElementById('map-mode-bp');
+    const gridBtn = document.getElementById('map-mode-grid');
+    if (bpBtn && gridBtn) {
+      if (style === 'blueprint') {
+        bpBtn.className = 'px-3 py-1 rounded bg-[#450D0D] text-white font-bold transition-all shadow-2xs';
+        gridBtn.className = 'px-3 py-1 rounded text-[#827473] hover:text-[#450D0D] font-bold transition-all';
+      } else {
+        gridBtn.className = 'px-3 py-1 rounded bg-[#450D0D] text-white font-bold transition-all shadow-2xs';
+        bpBtn.className = 'px-3 py-1 rounded text-[#827473] hover:text-[#450D0D] font-bold transition-all';
       }
     }
   }
