@@ -166,18 +166,11 @@ window.VisitorModule = class VisitorModule {
 
   /* 3. JOURNEY PLANNER VIEW */
   async renderPlanJourney(container) {
-    const eventId = this.eventId;
-    let eventTitle = 'Current Event';
-    let sessions = [];
+    const activeEv = this.app.getActiveEvent() || {};
+    const eventId = activeEv.id || this.eventId || 'aarpo-26';
+    const eventTitle = activeEv.title || 'Current Event';
+    let sessions = activeEv.sessions || [];
     let zones = [];
-
-    try {
-      const ev = await window.EventosAPI.getEvent(eventId);
-      if (ev) {
-        eventTitle = ev.title || 'Current Event';
-        sessions = ev.sessions || [];
-      }
-    } catch (e) {}
 
     try {
       zones = await window.EventosAPI.getZones(eventId);
@@ -194,13 +187,24 @@ window.VisitorModule = class VisitorModule {
       ];
     }
 
+    // Sort gates first for convenient starting location selection
+    zones.sort((a, b) => {
+      const aIsGate = a.name.toLowerCase().includes('gate') || a.name.toLowerCase().includes('entry');
+      const bIsGate = b.name.toLowerCase().includes('gate') || b.name.toLowerCase().includes('entry');
+      if (aIsGate && !bIsGate) return -1;
+      if (!aIsGate && bIsGate) return 1;
+      return 0;
+    });
+
     if (!sessions || !sessions.length) {
-      const roomNames = zones.map(z => z.name);
+      const roomNames = zones.map(z => z.name.split('(')[0].trim());
+      const startTime = activeEv.start_time || '09:30 AM';
+      const endTime   = activeEv.end_time || '05:30 PM';
       sessions = [
-        { id: `s-${eventId}-1`, time_label: '09:30 AM', title: `${eventTitle} - Opening Keynote`, stage: roomNames[1] || roomNames[0] || 'Quad Area Main Stage', speaker: 'Keynote Speaker' },
-        { id: `s-${eventId}-2`, time_label: '11:30 AM', title: `Tech & Innovation Exhibits`, stage: roomNames[3] || roomNames[2] || 'Sports Complex', speaker: 'Industry Specialist' },
-        { id: `s-${eventId}-3`, time_label: '01:00 PM', title: `Networking Lunch & Food Court`, stage: roomNames[2] || 'Canteen & Food Court', speaker: 'Open Networking' },
-        { id: `s-${eventId}-4`, time_label: '03:00 PM', title: `Capstone Projects & Awards`, stage: roomNames[1] || roomNames[0] || 'Quad Area Main Stage', speaker: 'Panel Guests' }
+        { id: `s-${eventId}-1`, time_label: startTime, title: `${eventTitle} - Opening Ceremony & Keynote`, stage: roomNames[1] || roomNames[0] || 'Quad Area Main Stage', speaker: 'Keynote Speaker' },
+        { id: `s-${eventId}-2`, time_label: '11:30 AM', title: `Technical Presentations & Exhibits`, stage: roomNames[3] || roomNames[2] || 'Sports Complex Arena', speaker: 'Department Specialist' },
+        { id: `s-${eventId}-3`, time_label: '01:00 PM', title: `Networking Break & Refreshments`, stage: roomNames[2] || roomNames[1] || 'Canteen Food Court', speaker: 'All Attendees' },
+        { id: `s-${eventId}-4`, time_label: endTime, title: `Valedictory Session & Awards`, stage: roomNames[1] || roomNames[0] || 'Quad Area Main Stage', speaker: 'Organizing Committee' }
       ];
     }
 
