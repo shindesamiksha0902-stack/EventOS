@@ -954,7 +954,6 @@ window.EventosApp = class EventosApp {
       </div>
     `;
   }
-  }
 
   logout() {
     this.setState('userId', null);
