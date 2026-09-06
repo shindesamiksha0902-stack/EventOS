@@ -174,27 +174,37 @@ window.VisitorModule = class VisitorModule {
     try {
       const ev = await window.EventosAPI.getEvent(eventId);
       if (ev) {
-        eventTitle = ev.title;
+        eventTitle = ev.title || 'Current Event';
         sessions = ev.sessions || [];
-        zones = ev.zones || [];
       }
     } catch (e) {}
 
-    if (!sessions.length) {
-      sessions = [
-        { id: `s-${eventId}-1`, time_label: '10:00 AM', title: 'Main Keynote Session', stage: 'Main Auditorium' },
-        { id: `s-${eventId}-2`, time_label: '02:00 PM', title: 'Special Exhibition & Networking', stage: 'Exhibition Hall' }
-      ];
-    }
+    try {
+      zones = await window.EventosAPI.getZones(eventId);
+    } catch (e) {}
 
-    if (!zones.length) {
+    if (!zones || !zones.length) {
       zones = [
-        { id: `${eventId}-z1`, name: 'Main Concourse & Gate 1' },
-        { id: `${eventId}-z2`, name: 'Central Exhibition Hall' },
-        { id: `${eventId}-z3`, name: 'Dining & Food Court' }
+        { id: `${eventId}-z6`, name: 'Gate 01 Main Entry (Check-in)' },
+        { id: `${eventId}-z1`, name: 'Quad Area (Main Stage & Lawn)' },
+        { id: `${eventId}-z2`, name: 'Canteen & Food Court (Gate 03)' },
+        { id: `${eventId}-z3`, name: 'Multipurpose Sports Complex' },
+        { id: `${eventId}-z4`, name: 'Gymkhana & Sports Area' },
+        { id: `${eventId}-z5`, name: 'Engineering Wing Labs' }
       ];
     }
 
+    if (!sessions || !sessions.length) {
+      const roomNames = zones.map(z => z.name);
+      sessions = [
+        { id: `s-${eventId}-1`, time_label: '09:30 AM', title: `${eventTitle} - Opening Keynote`, stage: roomNames[1] || roomNames[0] || 'Quad Area Main Stage', speaker: 'Keynote Speaker' },
+        { id: `s-${eventId}-2`, time_label: '11:30 AM', title: `Tech & Innovation Exhibits`, stage: roomNames[3] || roomNames[2] || 'Sports Complex', speaker: 'Industry Specialist' },
+        { id: `s-${eventId}-3`, time_label: '01:00 PM', title: `Networking Lunch & Food Court`, stage: roomNames[2] || 'Canteen & Food Court', speaker: 'Open Networking' },
+        { id: `s-${eventId}-4`, time_label: '03:00 PM', title: `Capstone Projects & Awards`, stage: roomNames[1] || roomNames[0] || 'Quad Area Main Stage', speaker: 'Panel Guests' }
+      ];
+    }
+
+    this._currentZones = zones;
     this.allSessions = sessions;
 
     container.innerHTML = `
@@ -220,7 +230,7 @@ window.VisitorModule = class VisitorModule {
             <div class="space-y-4 font-body text-xs">
               <div>
                 <label class="block font-label font-bold uppercase text-[#827473] mb-1">Starting Location / Gate</label>
-                <select id="journey-start" class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] p-2.5 text-xs text-[#450D0D]">
+                <select id="journey-start" class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] p-2.5 text-xs text-[#450D0D] focus:outline-none focus:border-[#9F3E41]">
                   ${zones.map(z => `
                     <option value="${z.id}">${z.name}</option>
                   `).join('')}
@@ -228,7 +238,7 @@ window.VisitorModule = class VisitorModule {
               </div>
               <div>
                 <label class="block font-label font-bold uppercase text-[#827473] mb-1">Destination Session</label>
-                <select id="journey-session" class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] p-2.5 text-xs text-[#450D0D]">
+                <select id="journey-session" class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] p-2.5 text-xs text-[#450D0D] focus:outline-none focus:border-[#9F3E41]">
                   ${sessions.map(s => `
                     <option value="${s.id}">${s.time_label} · ${s.title} (${s.stage})</option>
                   `).join('')}
@@ -266,6 +276,9 @@ window.VisitorModule = class VisitorModule {
     const sessionId = sessionSelect ? sessionSelect.value : '';
     const startZone = startSelect ? startSelect.value : '';
 
+    const sessionObj   = (this.allSessions || []).find(s => s.id === sessionId);
+    const startZoneObj = (this._currentZones || []).find(z => z.id === startZone);
+
     resultsBox.innerHTML = `
       <div class="p-8 text-center text-[#827473] animate-pulse font-body text-xs">
         <span class="material-symbols-outlined text-3xl text-[#9F3E41] mb-2 animate-spin">progress_activity</span>
@@ -274,7 +287,7 @@ window.VisitorModule = class VisitorModule {
     `;
 
     try {
-      const data = await window.EventosAPI.planJourney(this.userId, this.eventId, sessionId, startZone);
+      const data = await window.EventosAPI.planJourney(this.userId, this.eventId, sessionId, startZone, sessionObj, startZoneObj);
       this.activeJourney = data;
 
       resultsBox.innerHTML = `
