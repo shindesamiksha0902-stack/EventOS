@@ -879,12 +879,12 @@ window.EventosApp = class EventosApp {
               <span class="material-symbols-outlined text-sm">delete</span>
             </button>
 
-            <!-- Add Event Button -->
+            <!-- Add / Join Event Button -->
             <button onclick="window.app.openAddEventModal()" 
-              title="Add / Register another event"
+              title="${role === 'organizer' ? 'Add / Configure custom event' : 'Select / Register for another event'}"
               class="px-2.5 py-1 rounded-lg bg-[#FFFBF5] hover:bg-[#9F3E41] hover:text-white border border-[#EADFD0] text-[#9F3E41] text-xs font-label font-bold uppercase transition-colors flex items-center gap-0.5">
               <span class="material-symbols-outlined text-sm">add</span>
-              <span class="hidden lg:inline">Add</span>
+              <span class="hidden lg:inline">${role === 'organizer' ? 'Add Event' : 'Join Event'}</span>
             </button>
           </div>
         </div>
@@ -991,7 +991,7 @@ window.EventosApp = class EventosApp {
               <span class="material-symbols-outlined text-sm">delete</span>
             </button>
             <button onclick="window.app.openAddEventModal(); window.app.closeMobileMenu();"
-              class="px-3 py-2 rounded-lg bg-[#9F3E41] text-white text-xs font-label font-bold uppercase flex items-center gap-1 shrink-0 shadow-sm" title="Add Event">
+              class="px-3 py-2 rounded-lg bg-[#9F3E41] text-white text-xs font-label font-bold uppercase flex items-center gap-1 shrink-0 shadow-sm" title="${role === 'organizer' ? 'Add Event' : 'Join Event'}">
               <span class="material-symbols-outlined text-sm">add</span>
             </button>
           </div>
@@ -1048,10 +1048,10 @@ window.EventosApp = class EventosApp {
   }
 
   /* =========================================================================
-     4. ADD EVENT MODAL (Multi-Event Feature)
+     4. ADD / JOIN EVENT MODAL (Role-Aware)
      ========================================================================= */
   openAddEventModal() {
-    const role = this.getState('role');
+    const role = this.getState('role') || 'visitor';
     const isOrganizer = role === 'organizer';
     const events = this.state.userEvents || [];
 
@@ -1084,7 +1084,7 @@ window.EventosApp = class EventosApp {
                 <span class="text-[10px] font-label text-[#827473]">(${ev.location || 'Venue'})</span>
               </div>
               <div class="flex items-center gap-1.5 shrink-0">
-                <button type="button" onclick="window.app.switchEvent('${ev.id}'); window.app.closeModal();" class="px-2 py-0.5 rounded bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-label font-bold uppercase hover:bg-amber-100">
+                <button type="button" onclick="window.app.switchEvent('${ev.id}'); window.app.closeModal();" class="px-2.5 py-1 rounded bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-label font-bold uppercase hover:bg-amber-100">
                   Select
                 </button>
                 <button type="button" onclick="window.app.deleteEventById('${ev.id}'); window.app.openAddEventModal();" class="p-1 rounded text-rose-600 hover:bg-rose-50 transition-colors" title="Delete / Remove this event">
@@ -1097,24 +1097,13 @@ window.EventosApp = class EventosApp {
       </div>
     ` : '';
 
-    const html = `
-      <div class="p-6 max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between pb-3 mb-4 border-b border-[#EADFD0]">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-xl text-[#9F3E41]">add_circle</span>
-            <h3 class="font-headline text-lg font-medium text-[#450D0D]">
-              ${isOrganizer ? 'Create / Manage Custom Event' : 'Register for Another Event'}
-            </h3>
-          </div>
-          <button onclick="window.app.closeModal()" class="text-[#827473] hover:text-[#450D0D]">
-            <span class="material-symbols-outlined text-xl">close</span>
-          </button>
-        </div>
+    let formContent = '';
 
-        ${eventsListHtml}
-
+    if (isOrganizer) {
+      // 1. ORGANIZER FORM (Full Venue & Blueprint Controls)
+      formContent = `
         <div class="pt-1 mb-3">
-          <span class="text-xs font-label uppercase font-bold text-[#9F3E41]">➕ Add New Custom Event</span>
+          <span class="text-xs font-label uppercase font-bold text-[#9F3E41]">➕ Add / Configure New Event</span>
         </div>
 
         <form onsubmit="window.app.handleAddEventSubmit(event)" class="space-y-4">
@@ -1197,6 +1186,68 @@ window.EventosApp = class EventosApp {
             </button>
           </div>
         </form>
+      `;
+    } else {
+      // 2. VISITOR FORM (Clean Registration / Pass Issuance without Capacity or Blueprint Builder)
+      formContent = `
+        <div class="pt-1 mb-3">
+          <span class="text-xs font-label uppercase font-bold text-[#9F3E41]">🎫 Register for Another Event</span>
+        </div>
+
+        <form onsubmit="window.app.handleAddEventSubmit(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Event Name *</label>
+            <input id="modal-ev-name" type="text" placeholder="e.g. Pillai College Alegria Festival 2026" required
+              class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-3 py-2 text-xs font-body text-[#450D0D] focus:outline-none focus:border-[#9F3E41]"/>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Event Date</label>
+              <input id="modal-ev-date" type="text" placeholder="e.g. OCT 24-26, 2026" value="OCT 24-26, 2026"
+                class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-3 py-2 text-xs font-body text-[#450D0D] focus:outline-none focus:border-[#9F3E41]"/>
+            </div>
+            <div>
+              <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Location / Venue</label>
+              <input id="modal-ev-loc" type="text" placeholder="e.g. Pillai College, Panvel" value="Pillai College of Engineering, New Panvel"
+                class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-3 py-2 text-xs font-body text-[#450D0D] focus:outline-none focus:border-[#9F3E41]"/>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Attendee / Pass Holder Name</label>
+            <input id="modal-holder-name" type="text" value="${this.getState('userName') || 'Alex Morgan'}" placeholder="Your Full Name"
+              class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-3 py-2 text-xs font-body text-[#450D0D] focus:outline-none focus:border-[#9F3E41]"/>
+          </div>
+
+          <div class="pt-3 border-t border-[#EADFD0] flex justify-end gap-2">
+            <button type="button" onclick="window.app.closeModal()" class="px-4 py-2 rounded-lg border border-[#EADFD0] text-xs font-label text-[#827473]">
+              Cancel
+            </button>
+            <button type="submit" class="px-5 py-2 rounded-lg bg-[#9F3E41] hover:bg-[#450D0D] text-white text-xs font-label font-bold uppercase tracking-wider shadow flex items-center gap-1">
+              <span>Register &amp; Get Pass →</span>
+            </button>
+          </div>
+        </form>
+      `;
+    }
+
+    const html = `
+      <div class="p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between pb-3 mb-4 border-b border-[#EADFD0]">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-xl text-[#9F3E41]">${isOrganizer ? 'add_circle' : 'confirmation_number'}</span>
+            <h3 class="font-headline text-lg font-medium text-[#450D0D]">
+              ${isOrganizer ? 'Create / Manage Custom Event' : 'Select or Register for Event'}
+            </h3>
+          </div>
+          <button onclick="window.app.closeModal()" class="text-[#827473] hover:text-[#450D0D]">
+            <span class="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
+
+        ${eventsListHtml}
+        ${formContent}
       </div>
     `;
 
@@ -1234,12 +1285,52 @@ window.EventosApp = class EventosApp {
 
   async handleAddEventSubmit(e) {
     e.preventDefault();
-    const event_name = document.getElementById('modal-ev-name').value.trim();
-    const event_id = document.getElementById('modal-ev-id').value.trim() || event_name.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 20);
-    const event_date = document.getElementById('modal-ev-date').value.trim() || 'OCT 24-26, 2026';
-    const event_location = document.getElementById('modal-ev-loc').value.trim() || 'Campus Venue';
-    const max_capacity = parseInt(document.getElementById('modal-ev-cap')?.value) || 15000;
+    const role = this.getState('role') || 'visitor';
+    const isOrganizer = role === 'organizer';
 
+    const event_name = document.getElementById('modal-ev-name').value.trim();
+    const rawId = document.getElementById('modal-ev-id')?.value?.trim() || '';
+    const event_id = rawId || event_name.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 20);
+    const event_date = document.getElementById('modal-ev-date')?.value?.trim() || 'OCT 24-26, 2026';
+    const event_location = document.getElementById('modal-ev-loc')?.value?.trim() || 'Campus Venue';
+
+    if (!isOrganizer) {
+      // VISITOR REGISTRATION FLOW:
+      const holderName = document.getElementById('modal-holder-name')?.value?.trim() || this.getState('userName') || 'Alex Morgan';
+      const passId = 'PASS-' + Math.floor(10000 + Math.random() * 90000);
+      
+      const newEv = {
+        id: event_id,
+        title: event_name,
+        location: event_location,
+        date_label: event_date,
+        category: 'General'
+      };
+
+      const newPass = {
+        id: passId,
+        eventId: event_id,
+        eventName: event_name,
+        passType: 'Standard Event Access',
+        holder: holderName,
+        validDates: event_date
+      };
+
+      const existingPasses = this.state.userPasses || [];
+      this.setState('userPasses', [newPass, ...existingPasses.filter(p => p.id !== passId)]);
+
+      const existingEvs = this.state.userEvents || [];
+      const updatedEvs = [newEv, ...existingEvs.filter(e => e.id !== event_id)];
+      this.setState('userEvents', updatedEvs);
+
+      this.toast(`Pass confirmed for "${event_name}"!`);
+      this.closeModal();
+      this.switchEvent(event_id);
+      return;
+    }
+
+    // ORGANIZER CREATION FLOW:
+    const max_capacity = parseInt(document.getElementById('modal-ev-cap')?.value) || 15000;
     let file_name = null;
     let file_data = null;
     const fileInput = document.getElementById('modal-ev-file');
@@ -1285,7 +1376,7 @@ window.EventosApp = class EventosApp {
       file_name,
       file_data,
       custom_zones,
-      role: this.getState('role')
+      role: 'organizer'
     };
 
     const userId = this.getState('userId') || 'user-organizer-admin';
@@ -1301,7 +1392,7 @@ window.EventosApp = class EventosApp {
         file_data
       };
 
-      this.toast(`Event "${event_name}" created with ${custom_zones.length} custom rooms!`);
+      this.toast(`Event "${event_name}" saved with ${custom_zones.length} custom rooms & blueprint!`);
       this.closeModal();
 
       // Refresh events list and switch active event

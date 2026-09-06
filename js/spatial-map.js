@@ -41,14 +41,12 @@ window.SpatialMapEngine = class SpatialMapEngine {
       console.warn('[SpatialMapEngine] Could not load event info:', err);
     }
 
-    // Check if event has a blueprint image (uploaded data or campus floorplan)
-    const isPillaiOrBlueprint = (eventId && eventId.includes('pillai')) || 
-                                (event && event.title && event.title.toLowerCase().includes('pillai')) ||
-                                (event && event.file_name && (event.file_name.includes('blueprint') || event.file_name.includes('ground') || event.file_name.includes('floor')));
-
-    const imgSrc = (event && event.file_data && event.file_data.startsWith('data:image'))
+    // Check if event has a blueprint image (uploaded data or stored under event/fallback key)
+    const customBp = (event && event.file_data && event.file_data.startsWith('data:image'))
       ? event.file_data
-      : 'blueprint_ground_floor.jpg';
+      : (localStorage.getItem('eventos_blueprint_' + eventId) || localStorage.getItem('eventos_blueprint'));
+
+    const imgSrc = customBp || 'blueprint_ground_floor.jpg';
 
     this.blueprintImg = new Image();
     this.blueprintImg.crossOrigin = 'anonymous';

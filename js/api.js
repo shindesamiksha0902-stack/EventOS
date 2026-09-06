@@ -324,12 +324,13 @@ window.EventosAPI = {
   },
 
   async addUserEvent(userId, payload) {
-    const eventId = payload.event_id || (payload.event_name ? payload.event_name.toLowerCase().replace(/[^a-z0-9-_]/g, '-').slice(0, 20) : 'event-' + Date.now());
+    const rawId = payload.event_id ? payload.event_id.toLowerCase().trim().replace(/[^a-z0-9-_]/g, '-') : '';
+    const eventId = rawId || (payload.event_name ? payload.event_name.toLowerCase().replace(/[^a-z0-9-_]/g, '-').slice(0, 20) : 'event-' + Date.now());
     const event = {
       id: eventId,
       title: payload.event_name || 'Custom Event',
       subtitle: `${payload.event_name || 'Custom Event'} Assembly`,
-      category: 'General',
+      category: payload.category || 'General',
       location: payload.event_location || 'Campus / Venue Center',
       date_label: payload.event_date || 'OCT 24-26, 2026',
       start_time: payload.start_time || '09:00 AM',
@@ -343,14 +344,31 @@ window.EventosAPI = {
       description: `Official event managed on EVENTOS at ${payload.event_location || 'Campus Center'} with live spatial flow.`
     };
 
+    // Save blueprint image directly under event key and general fallback key
+    if (payload.file_data) {
+      try {
+        localStorage.setItem('eventos_blueprint_' + eventId, payload.file_data);
+        if (eventId === 'aarpo-26' || eventId.includes('aarpo') || eventId.includes('pillai')) {
+          localStorage.setItem('eventos_blueprint_aarpo-26', payload.file_data);
+          localStorage.setItem('eventos_blueprint', payload.file_data);
+        }
+      } catch (e) {}
+    }
+
     const customEvents = this._getCustomEvents();
     const existingIdx = customEvents.findIndex(e => e.id === event.id);
-    if (existingIdx >= 0) customEvents[existingIdx] = event;
-    else customEvents.unshift(event);
+    if (existingIdx >= 0) {
+      customEvents[existingIdx] = { ...customEvents[existingIdx], ...event };
+    } else {
+      customEvents.unshift(event);
+    }
     this._saveCustomEvents(customEvents);
 
-    if (payload.custom_zones && Array.isArray(payload.custom_zones)) {
+    if (payload.custom_zones && Array.isArray(payload.custom_zones) && payload.custom_zones.length > 0) {
       this.saveZones(eventId, payload.custom_zones);
+      if (eventId === 'aarpo-26' || eventId.includes('aarpo') || eventId.includes('pillai')) {
+        this.saveZones('aarpo-26', payload.custom_zones);
+      }
     }
 
     try {
@@ -428,6 +446,10 @@ window.EventosAPI = {
     }
 
     if (found) {
+      if (!found.file_data) {
+        const bp = localStorage.getItem('eventos_blueprint_' + id) || localStorage.getItem('eventos_blueprint');
+        if (bp) found.file_data = bp;
+      }
       if (!found.sessions || !found.sessions.length) {
         const zones = await this.getZones(found.id);
         const r1 = zones[0] ? zones[0].name.split('(')[0].trim() : 'Main Hall';
@@ -443,6 +465,7 @@ window.EventosAPI = {
       return found;
     }
 
+    const savedBp = localStorage.getItem('eventos_blueprint_' + id) || localStorage.getItem('eventos_blueprint');
     return {
       id: id || 'aarpo-26',
       title: 'AARPO World Summit 2026',
@@ -451,10 +474,11 @@ window.EventosAPI = {
       date_label: 'SEP 14-16, 2026',
       location: 'Lisbon Congress Center',
       max_capacity: 15000,
+      file_data: savedBp || null,
       sessions: [
-        { id: 's1', title: 'Design for Tomorrow Keynote', time_label: '09:30 AM', stage: 'Main Stage', speaker: 'Elena Rostova' },
-        { id: 's2', title: 'Modern UX & Simple Grids Workshop', time_label: '11:00 AM', stage: 'Studio B', speaker: 'Marc Vance' },
-        { id: 's3', title: 'Pedestrian Flow & Smart Venues', time_label: '02:00 PM', stage: 'Main Stage', speaker: 'Dr. Aris Thorne' }
+        { id: 's1', title: 'Design for Tomorrow Keynote', time_label: '09:30 AM', stage: 'Quad Area (Main Stage & Lawn)', speaker: 'Elena Rostova' },
+        { id: 's2', title: 'Modern UX & Simple Grids Workshop', time_label: '11:00 AM', stage: 'Multipurpose Sports Complex', speaker: 'Marc Vance' },
+        { id: 's3', title: 'Pedestrian Flow & Smart Venues', time_label: '02:00 PM', stage: 'Quad Area (Main Stage & Lawn)', speaker: 'Dr. Aris Thorne' }
       ]
     };
   },
