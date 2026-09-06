@@ -67,16 +67,8 @@
       </nav>
 
       <!-- Switch Mode Button + Live API dot -->
-      <div class="flex items-center gap-3">
-        <!-- Live API status dot (clickable to configure backend URL) -->
-        <button onclick="window.app && window.app.showApiSettingsModal ? window.app.showApiSettingsModal() : alert('API Endpoint: ' + (window.EVENTOS_CONFIG ? window.EVENTOS_CONFIG.API_BASE : 'http://localhost:3001/api'))" class="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer" title="Click to view or change Backend API URL">
-          <div id="api-live-dot" class="w-2 h-2 rounded-full bg-gray-300"></div>
-          <span id="api-live-label" class="text-[10px] font-label uppercase font-bold text-[#827473] hidden sm:inline">API</span>
-        </button>
-        <button onclick="window.app.navigate('auth')" class="text-xs font-label uppercase font-bold text-[#9F3E41] hover:text-[#450D0D] flex items-center gap-1 border border-[#EADFD0] px-3 py-1.5 rounded-lg bg-white shadow-2xs">
-          <span>Switch Mode</span>
-          <span class="material-symbols-outlined text-sm">swap_horiz</span>
-        </button>
+      <div id="header-right-actions" class="flex items-center gap-3">
+        <!-- Injected dynamically by JS based on login/auth state -->
       </div>
     </div>
   </header>

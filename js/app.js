@@ -708,13 +708,53 @@ window.EventosApp = class EventosApp {
      3. HEADER NAVIGATION WITH EVENT SELECTOR & [+ ADD EVENT] BUTTON
      ========================================================================= */
   updateHeader() {
-    const role = this.getState('role');
+    const route = this.state.currentRoute || window.location.hash.replace('#', '') || 'auth';
+    const isAuthRoute = (route === 'auth' || route === 'login' || route === 'register');
+    const role = this.getState('role') || 'visitor';
     const roleBadge = document.getElementById('header-role-badge');
     const navLinks = document.getElementById('header-nav-links');
+    const rightActions = document.getElementById('header-right-actions');
 
+    if (isAuthRoute) {
+      // 1. Unauthenticated / Landing View: Clean header without internal event controls
+      if (roleBadge) {
+        roleBadge.className = 'hidden';
+      }
+      if (navLinks) {
+        navLinks.innerHTML = '';
+      }
+      if (rightActions) {
+        rightActions.innerHTML = `
+          <button onclick="window.app.showApiSettingsModal ? window.app.showApiSettingsModal() : null" class="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer" title="Click to view or change Backend API URL">
+            <div id="api-live-dot" class="w-2 h-2 rounded-full ${window.EventosAPI && window.EventosAPI.isLive ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}"></div>
+            <span id="api-live-label" class="text-[10px] font-label uppercase font-bold text-[#827473] hidden sm:inline">${window.EventosAPI && window.EventosAPI.isLive ? 'Live' : 'API'}</span>
+          </button>
+          <button onclick="window.app.renderLogin(document.getElementById('view-container'), 'visitor')" class="text-xs font-label uppercase font-bold text-[#9F3E41] hover:text-[#450D0D] flex items-center gap-1 border border-[#EADFD0] px-3.5 py-1.5 rounded-lg bg-white shadow-2xs">
+            <span>Sign In</span>
+            <span class="material-symbols-outlined text-sm">login</span>
+          </button>
+        `;
+      }
+      return;
+    }
+
+    // 2. Authenticated View: Show full header navigation & controls!
     if (roleBadge) {
       roleBadge.innerText = role === 'organizer' ? 'ORGANIZER MODE' : 'VISITOR MODE';
       roleBadge.className = `hidden sm:inline-block px-3 py-1 rounded-full text-[11px] font-label font-bold uppercase tracking-wider ${role === 'organizer' ? 'bg-[#450D0D] text-white' : 'bg-[#9F3E41] text-white'}`;
+    }
+
+    if (rightActions) {
+      rightActions.innerHTML = `
+        <button onclick="window.app.showApiSettingsModal ? window.app.showApiSettingsModal() : null" class="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer" title="Click to view or change Backend API URL">
+          <div id="api-live-dot" class="w-2 h-2 rounded-full ${window.EventosAPI && window.EventosAPI.isLive ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}"></div>
+          <span id="api-live-label" class="text-[10px] font-label uppercase font-bold text-[#827473] hidden sm:inline">${window.EventosAPI && window.EventosAPI.isLive ? 'Live' : 'API'}</span>
+        </button>
+        <button onclick="window.app.logout()" class="text-xs font-label uppercase font-bold text-[#9F3E41] hover:text-[#450D0D] flex items-center gap-1 border border-[#EADFD0] px-3 py-1.5 rounded-lg bg-white shadow-2xs" title="Sign out / Switch account">
+          <span>Sign Out</span>
+          <span class="material-symbols-outlined text-sm">logout</span>
+        </button>
+      `;
     }
 
     const events = this.state.userEvents || [];
@@ -724,17 +764,17 @@ window.EventosApp = class EventosApp {
       let pageButtons = '';
       if (role === 'organizer') {
         pageButtons = `
-          <button onclick="window.app.navigate('organizer-overview')" class="hover:text-[#9F3E41]">Dashboard</button>
-          <button onclick="window.app.navigate('organizer-flow-balancer')" class="hover:text-[#9F3E41] font-bold text-[#9F3E41]">Fix Crowd</button>
-          <button onclick="window.app.navigate('organizer-live-map')" class="hover:text-[#9F3E41]">Crowd Map</button>
-          <button onclick="window.app.navigate('organizer-simulation')" class="hover:text-[#9F3E41]">Simulator</button>
+          <button onclick="window.app.navigate('organizer-overview')" class="hover:text-[#9F3E41] ${route === 'organizer-overview' ? 'text-[#9F3E41] font-extrabold' : ''}">Dashboard</button>
+          <button onclick="window.app.navigate('organizer-flow-balancer')" class="hover:text-[#9F3E41] ${route === 'organizer-flow-balancer' ? 'text-[#9F3E41] font-extrabold' : 'text-[#9F3E41] font-bold'}">Fix Crowd</button>
+          <button onclick="window.app.navigate('organizer-live-map')" class="hover:text-[#9F3E41] ${route === 'organizer-live-map' ? 'text-[#9F3E41] font-extrabold' : ''}">Crowd Map</button>
+          <button onclick="window.app.navigate('organizer-simulation')" class="hover:text-[#9F3E41] ${route === 'organizer-simulation' ? 'text-[#9F3E41] font-extrabold' : ''}">Simulator</button>
         `;
       } else {
         pageButtons = `
-          <button onclick="window.app.navigate('visitor-find')" class="hover:text-[#9F3E41]">Explore Events</button>
-          <button onclick="window.app.navigate('visitor-plan-journey')" class="hover:text-[#9F3E41]">Plan Journey</button>
-          <button onclick="window.app.navigate('visitor-my-journey')" class="hover:text-[#9F3E41]">My Ticket &amp; Schedule</button>
-          <button onclick="window.app.navigate('visitor-live')" class="hover:text-[#9F3E41]">Venue Map</button>
+          <button onclick="window.app.navigate('visitor-find')" class="hover:text-[#9F3E41] ${route === 'visitor-find' ? 'text-[#9F3E41] font-extrabold' : ''}">Explore Events</button>
+          <button onclick="window.app.navigate('visitor-plan-journey')" class="hover:text-[#9F3E41] ${route === 'visitor-plan-journey' ? 'text-[#9F3E41] font-extrabold' : ''}">Plan Journey</button>
+          <button onclick="window.app.navigate('visitor-my-journey')" class="hover:text-[#9F3E41] ${route === 'visitor-my-journey' ? 'text-[#9F3E41] font-extrabold' : ''}">My Ticket &amp; Schedule</button>
+          <button onclick="window.app.navigate('visitor-live')" class="hover:text-[#9F3E41] ${route === 'visitor-live' ? 'text-[#9F3E41] font-extrabold' : ''}">Venue Map</button>
         `;
       }
 
@@ -770,6 +810,12 @@ window.EventosApp = class EventosApp {
         </div>
       `;
     }
+  }
+
+  logout() {
+    this.setState('userId', null);
+    this.toast('Signed out successfully.');
+    this.navigate('auth');
   }
 
   /* =========================================================================
@@ -1022,6 +1068,7 @@ window.EventosApp = class EventosApp {
 
     this.setState('currentRoute', route);
     window.location.hash = route;
+    this.updateHeader();
     const container = document.getElementById('view-container');
     if (!container) return;
 
