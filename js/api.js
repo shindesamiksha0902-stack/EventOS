@@ -377,16 +377,31 @@ window.EventosAPI = {
     try {
       return await this._fetch('/events/' + encodeURIComponent(eventId) + '/live-state');
     } catch (e) {
+      const zones = await this.getZones(eventId);
+      const zonesWithPct = (zones || []).map(z => {
+        const occ = z.current_occ !== undefined ? z.current_occ : (z.current || Math.round((z.capacity || 1000) * 0.65));
+        const cap = z.capacity || 1000;
+        const pct = Math.round((occ / cap) * 100);
+        return {
+          id: z.id,
+          name: z.name,
+          current_occ: occ,
+          capacity: cap,
+          pct,
+          isBottleneck: pct >= 88
+        };
+      });
+
+      const bottleneck = zonesWithPct.find(z => z.pct >= 85);
+
       return {
         event_id: eventId,
-        stations: [
-          { name: 'Station A (Main Stage)', occ: 4850, cap: 5500, pct: 88 },
-          { name: 'Station B (Exhibition A)', occ: 1920, cap: 4000, pct: 48 },
-          { name: 'Station C (Food Court)', occ: 1025, cap: 2500, pct: 41 }
-        ],
-        recommendation: {
-          active: true,
-          text: 'Quad Area is reaching peak density. We recommend visiting Station B or C.'
+        zones: zonesWithPct,
+        flow_recommendation: {
+          active: !!bottleneck,
+          text: bottleneck 
+            ? `${bottleneck.name.split('(')[0].trim()} is reaching peak capacity (${bottleneck.pct}%). We recommend visiting other pavilions to avoid queue delays.`
+            : null
         }
       };
     }

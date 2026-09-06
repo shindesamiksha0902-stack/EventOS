@@ -525,8 +525,13 @@ window.VisitorModule = class VisitorModule {
       new window.SpatialMapEngine('visitor-map-canvas', { mode: 'visitor', eventId });
     }, 100);
 
-    // Start Live Telemetry Polling (every 4s)
-    window.EventosAPI.startLiveStatePolling(eventId, 4000, (liveState) => {
+    // Initial instant telemetry load
+    window.EventosAPI.getEventLiveState(eventId).then(state => {
+      this._updateVisitorLiveView(state);
+    }).catch(() => {});
+
+    // Start Live Telemetry Polling (every 3s)
+    window.EventosAPI.startLiveStatePolling(eventId, 3000, (liveState) => {
       this._updateVisitorLiveView(liveState);
     });
   }
@@ -538,7 +543,7 @@ window.VisitorModule = class VisitorModule {
     const bText    = document.getElementById('visitor-rebalance-text');
     const pill     = document.getElementById('visitor-live-status-pill');
 
-    const flowRec = liveState.flow_recommendation;
+    const flowRec = liveState.flow_recommendation || liveState.recommendation;
     if (flowRec && flowRec.active) {
       if (banner) banner.classList.remove('hidden');
       if (bText && flowRec.text) bText.innerText = flowRec.text;
@@ -555,16 +560,20 @@ window.VisitorModule = class VisitorModule {
     }
 
     const panel = document.getElementById('zone-crowd-panel');
-    if (panel && liveState.zones) {
+    const rawZones = liveState.zones || liveState.stations || [];
+    if (panel && rawZones.length) {
       panel.innerHTML = `
-        <h3 class="font-headline text-sm font-medium text-[#450D0D] mb-3">Room Crowdedness <span class="text-[10px] text-emerald-600 font-label">● LIVE</span></h3>
+        <h3 class="font-headline text-sm font-medium text-[#450D0D] mb-3">Room Crowdedness <span class="text-[10px] text-emerald-600 font-label font-bold">● LIVE</span></h3>
         <div class="space-y-2 text-xs font-label">
-          ${liveState.zones.map(z => {
-            const p = z.pct;
-            const color = p >= 90 ? 'text-rose-700' : p >= 75 ? 'text-amber-700' : 'text-emerald-700';
-            const dot   = p >= 90 ? '🔴' : p >= 75 ? '🟡' : '🟢';
-            const label = p >= 90 ? `Busy (${p}% Full)` : p >= 75 ? `Moderate (${p}%)` : `Space (${p}%)`;
-            return `<div class="flex justify-between items-center"><span>${z.name.split('(')[0]}:</span><span class="${color} font-bold">${dot} ${label}</span></div>`;
+          ${rawZones.map(z => {
+            const occ = z.current_occ !== undefined ? z.current_occ : (z.occ || 500);
+            const cap = z.capacity || z.cap || 1000;
+            const p = z.pct !== undefined ? z.pct : Math.round((occ / cap) * 100);
+            const color = p >= 88 ? 'text-rose-700' : p >= 70 ? 'text-amber-700' : 'text-emerald-700';
+            const dot   = p >= 88 ? '🔴' : p >= 70 ? '🟡' : '🟢';
+            const label = p >= 88 ? `Busy (${p}% Full)` : p >= 70 ? `Moderate (${p}%)` : `Space (${p}%)`;
+            const name = (z.name || 'Zone').split('(')[0].trim();
+            return `<div class="flex justify-between items-center py-0.5 border-b border-[#EADFD0]/40 last:border-0"><span class="text-[#450D0D] font-medium">${name}:</span><span class="${color} font-bold">${dot} ${label}</span></div>`;
           }).join('')}
         </div>
       `;
