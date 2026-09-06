@@ -219,6 +219,17 @@ window.EventosApp = class EventosApp {
     this.navigate(current);
   }
 
+  togglePasswordVisibility(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const isPass = input.type === 'password';
+    input.type = isPass ? 'text' : 'password';
+    const icon = btn ? btn.querySelector('.material-symbols-outlined') : null;
+    if (icon) {
+      icon.innerText = isPass ? 'visibility_off' : 'visibility';
+    }
+  }
+
   setRole(role) {
     this._pendingRole = role;
     this.renderRegister(document.getElementById('view-container'), role);
@@ -303,8 +314,15 @@ window.EventosApp = class EventosApp {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Password *</label>
-                  <input id="v-password" type="password" placeholder="••••••••" minlength="4" required
-                    class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-3.5 py-2 text-xs font-body text-[#450D0D] focus:outline-none focus:border-[#9F3E41]"/>
+                  <div class="relative flex items-center">
+                    <input id="v-password" type="password" placeholder="••••••••" minlength="4" required
+                      class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-3.5 py-2 pr-10 text-xs font-body text-[#450D0D] focus:outline-none focus:border-[#9F3E41]"/>
+                    <button type="button" onclick="window.app.togglePasswordVisibility('v-password', this)"
+                      class="absolute right-2.5 text-[#827473] hover:text-[#450D0D] p-1 flex items-center justify-center focus:outline-none cursor-pointer"
+                      title="Show/Hide Password">
+                      <span class="material-symbols-outlined text-lg leading-none">visibility</span>
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Home / City Address *</label>
@@ -386,8 +404,15 @@ window.EventosApp = class EventosApp {
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Password *</label>
-                  <input id="o-password" type="password" placeholder="••••••••" minlength="4" required
-                    class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-3.5 py-2 text-xs font-body text-[#450D0D] focus:outline-none focus:border-[#450D0D]"/>
+                  <div class="relative flex items-center">
+                    <input id="o-password" type="password" placeholder="••••••••" minlength="4" required
+                      class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-3.5 py-2 pr-10 text-xs font-body text-[#450D0D] focus:outline-none focus:border-[#450D0D]"/>
+                    <button type="button" onclick="window.app.togglePasswordVisibility('o-password', this)"
+                      class="absolute right-2.5 text-[#827473] hover:text-[#450D0D] p-1 flex items-center justify-center focus:outline-none cursor-pointer"
+                      title="Show/Hide Password">
+                      <span class="material-symbols-outlined text-lg leading-none">visibility</span>
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Company / HQ Address *</label>
@@ -648,8 +673,15 @@ window.EventosApp = class EventosApp {
               </div>
               <div>
                 <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Password</label>
-                <input id="login-pass" type="password" value="${isOrganizer ? 'admin123' : 'alex123'}" placeholder="••••••••"
-                  class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-4 py-2.5 text-sm font-body text-[#450D0D] focus:outline-none focus:border-[#9F3E41] focus:ring-1 focus:ring-[#9F3E41]" required/>
+                <div class="relative flex items-center">
+                  <input id="login-pass" type="password" value="${isOrganizer ? 'admin123' : 'alex123'}" placeholder="••••••••"
+                    class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-4 py-2.5 pr-10 text-sm font-body text-[#450D0D] focus:outline-none focus:border-[#9F3E41] focus:ring-1 focus:ring-[#9F3E41]" required/>
+                  <button type="button" onclick="window.app.togglePasswordVisibility('login-pass', this)"
+                    class="absolute right-2.5 text-[#827473] hover:text-[#450D0D] p-1 flex items-center justify-center focus:outline-none cursor-pointer"
+                    title="Show/Hide Password">
+                    <span class="material-symbols-outlined text-lg leading-none">visibility</span>
+                  </button>
+                </div>
               </div>
               <div class="flex items-center justify-between text-[11px] font-label text-[#827473]">
                 <label class="flex items-center gap-1.5 cursor-pointer">
