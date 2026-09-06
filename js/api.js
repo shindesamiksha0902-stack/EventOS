@@ -666,7 +666,7 @@ window.EventosAPI = {
   // -- Journey Planner -----------------------------------------
   async planJourney(userId, eventId, destinationSession, startZone, sessionObj, startZoneObj) {
     try {
-      return await this._fetch('/journey/plan', {
+      const data = await this._fetch('/journey/plan', {
         method: 'POST',
         body: JSON.stringify({
           user_id: userId,
@@ -675,57 +675,110 @@ window.EventosAPI = {
           start_zone: startZone || 'zone-south-gate'
         })
       });
-    } catch (e) {
-      const startName = (startZoneObj && startZoneObj.name) ? startZoneObj.name : 'Main Entry Gate';
-      const destName  = (sessionObj && sessionObj.name) ? sessionObj.name : ((sessionObj && sessionObj.stage) ? sessionObj.stage : ((sessionObj && sessionObj.title) ? sessionObj.title : 'Destination Venue'));
-      const startClean = startName.split('(')[0].trim();
-      const destClean  = destName.split('(')[0].trim();
+      if (data && data.steps) return data;
+    } catch (e) {}
 
-      const zones = await this.getZones(eventId);
-      const intermediateZone = zones.find(z => z.id !== (startZoneObj && startZoneObj.id) && z.id !== (sessionObj && sessionObj.id) && !z.name.toLowerCase().includes('gate')) || zones[1] || { name: 'Central Concourse' };
-      const intermediateName = intermediateZone.name.split('(')[0].trim();
-      const intermediateOcc  = intermediateZone.current_occ || Math.round((intermediateZone.capacity || 1000) * 0.5);
-      const intermediatePct  = Math.round((intermediateOcc / (intermediateZone.capacity || 1000)) * 100);
+    const zones = await this.getZones(eventId);
+    let startObj = (startZoneObj && startZoneObj.name) 
+      ? startZoneObj 
+      : (zones.find(z => z.id === startZone) || zones[zones.length - 1] || { id: 'start', name: 'Main Entry Gate', x: 430, y: 415, width: 110, height: 50 });
 
-      const isBusy = intermediatePct >= 80;
+    let destObj = (sessionObj && sessionObj.name) 
+      ? sessionObj 
+      : (zones.find(z => z.id === destinationSession) || zones[0] || { id: 'dest', name: 'Quad Area (Main Stage & Lawn)', x: 155, y: 125, width: 230, height: 110 });
 
-      return {
-        journey_id: 'JRN-' + Date.now(),
-        event_id: eventId,
-        route_title: `Optimal Route: ${startClean} → ${destClean}`,
-        eta_minutes: Math.max(2, Math.min(6, Math.round(2 + Math.random() * 2))),
-        alternate_suggested: isBusy,
-        crowd_warning: isBusy 
-          ? `${intermediateName} is reaching high density (${intermediatePct}%). Wayfinding directed through open side corridor.`
-          : `Corridors between ${startClean} and ${destClean} are clear with optimal flow.`,
-        steps: [
-          { 
-            step: 1, 
-            title: `Depart from ${startClean}`, 
-            detail: `Proceed past entrance towards the main indoor walking aisle`, 
-            duration_sec: 60, 
-            icon: 'directions_walk', 
-            status: 'normal' 
-          },
-          { 
-            step: 2, 
-            title: `Pass through ${intermediateName}`, 
-            detail: `Follow indoor navigation signs (${intermediatePct}% capacity · Flow smooth)`, 
-            duration_sec: 90, 
-            icon: 'alt_route', 
-            status: isBusy ? 'warning' : 'recommended' 
-          },
-          { 
-            step: 3, 
-            title: `Arrive at ${destClean}`, 
-            detail: `Present digital QR pass at ${destClean} for entrance access`, 
-            duration_sec: 45, 
-            icon: 'check_circle', 
-            status: 'destination' 
-          }
-        ]
-      };
+    const startClean = (startObj.name || 'Gate').split('(')[0].trim();
+    const destClean  = (destObj.name || 'Auditorium').split('(')[0].trim();
+
+    const startX = (startObj.x || 100) + (startObj.width || 100) / 2;
+    const startY = (startObj.y || 100) + (startObj.height || 80) / 2;
+    const destX  = (destObj.x || 400) + (destObj.width || 100) / 2;
+    const destY  = (destObj.y || 200) + (destObj.height || 80) / 2;
+
+    const midX = (startX + destX) / 2;
+    const midY = (startY + destY) / 2;
+
+    let intermediateZone = null;
+    let shortestDist = Infinity;
+
+    zones.forEach(z => {
+      if (z.id !== startObj.id && z.id !== destObj.id) {
+        const zCenterX = (z.x || 0) + (z.width || 100) / 2;
+        const zCenterY = (z.y || 0) + (z.height || 80) / 2;
+        const dist = Math.hypot(zCenterX - midX, zCenterY - midY);
+        if (dist < shortestDist) {
+          shortestDist = dist;
+          intermediateZone = z;
+        }
+      }
+    });
+
+    if (!intermediateZone) {
+      intermediateZone = zones.find(z => z.id !== startObj.id && z.id !== destObj.id) || { id: 'mid', name: 'Central Concourse', x: midX, y: midY, width: 100, height: 80, current_occ: 500, capacity: 1000 };
     }
+
+    const intermediateClean = intermediateZone.name.split('(')[0].trim();
+    const intermediateOcc   = intermediateZone.current_occ || Math.round((intermediateZone.capacity || 1000) * 0.5);
+    const intermediateCap   = intermediateZone.capacity || 1000;
+    const intermediatePct   = Math.round((intermediateOcc / intermediateCap) * 100);
+
+    const isBusy = intermediatePct >= 80;
+    const distPx = Math.hypot(destX - startX, destY - startY);
+    const etaMinutes = Math.max(1, Math.min(6, Math.round(distPx / 110) + (isBusy ? 1 : 0)));
+
+    const interX = (intermediateZone.x !== undefined ? intermediateZone.x : midX) + (intermediateZone.width || 100) / 2;
+    const interY = (intermediateZone.y !== undefined ? intermediateZone.y : midY) + (intermediateZone.height || 80) / 2;
+
+    const waypoints = [
+      { id: startObj.id, name: startClean, x: startX, y: startY, raw: startObj },
+      { id: intermediateZone.id, name: intermediateClean, x: interX, y: interY, pct: intermediatePct, raw: intermediateZone },
+      { id: destObj.id, name: destClean, x: destX, y: destY, raw: destObj }
+    ];
+
+    return {
+      journey_id: 'JRN-' + Date.now(),
+      event_id: eventId,
+      route_title: `Optimal Route: ${startClean} → ${destClean}`,
+      eta_minutes: etaMinutes,
+      waypoints,
+      start_zone: startObj,
+      dest_zone: destObj,
+      alternate_suggested: isBusy,
+      crowd_warning: isBusy 
+        ? `${intermediateClean} is reaching high density (${intermediatePct}%). Wayfinding directed through open side corridor.`
+        : `Corridors between ${startClean} and ${destClean} are clear with optimal flow.`,
+      steps: [
+        { 
+          step: 1, 
+          title: `Depart from ${startClean}`, 
+          detail: `Proceed past entrance towards the main indoor walking aisle`, 
+          duration_sec: 60, 
+          icon: 'directions_walk', 
+          status: 'normal',
+          zone_id: startObj.id
+        },
+        { 
+          step: 2, 
+          title: `Pass through ${intermediateClean}`, 
+          detail: isBusy
+            ? `High density alert (${intermediatePct}% full). Follow side corridor markers.`
+            : `Follow indoor navigation markers (${intermediatePct}% density · Flow smooth)`, 
+          duration_sec: 90, 
+          icon: 'alt_route', 
+          status: isBusy ? 'warning' : 'recommended',
+          zone_id: intermediateZone.id
+        },
+        { 
+          step: 3, 
+          title: `Arrive at ${destClean}`, 
+          detail: `Welcome to ${destClean} · Present digital QR pass for entry access`, 
+          duration_sec: 45, 
+          icon: 'check_circle', 
+          status: 'destination',
+          zone_id: destObj.id
+        }
+      ]
+    };
   },
 
   async getUserJourneys(userId, eventId) {

@@ -6,51 +6,103 @@ const DataService = require('../db/dataService');
 // POST /api/journey/plan
 router.post('/plan', async (req, res) => {
   try {
-    const { user_id, event_id, start_zone, destination_session, avoid_crowds } = req.body;
+    const { user_id, event_id, start_zone, destination_session } = req.body;
     const eventId = event_id || 'aarpo-26';
 
     const event = await DataService.getEventById(eventId);
     if (!event) return res.status(404).json({ error: 'Event not found' });
 
-    let session = null;
-    if (destination_session) {
-      session = await DataService.getSessionById(destination_session);
-    } else {
-      const sessions = await DataService.getSessionsByEventId(eventId);
-      session = sessions[0] || null;
+    const zones = (await DataService.getZonesByEventId(eventId)) || [];
+
+    // Resolve start zone
+    let startObj = zones.find(z => z.id === start_zone) || 
+                   zones.find(z => z.name.toLowerCase().includes('gate') || z.name.toLowerCase().includes('entry')) || 
+                   zones[0] || 
+                   { id: 'start', name: 'Main Entry Gate', x: 430, y: 415, width: 110, height: 50 };
+
+    // Resolve destination zone
+    let destObj = zones.find(z => z.id === destination_session) || 
+                  zones.find(z => z.name.toLowerCase().includes('quad') || z.name.toLowerCase().includes('stage')) || 
+                  zones[1] || 
+                  { id: 'dest', name: 'Main Auditorium', x: 155, y: 125, width: 230, height: 110 };
+
+    const startClean = startObj.name.split('(')[0].trim();
+    const destClean  = destObj.name.split('(')[0].trim();
+
+    // Find best intermediate corridor / zone
+    const startX = (startObj.x || 100) + (startObj.width || 100) / 2;
+    const startY = (startObj.y || 100) + (startObj.height || 80) / 2;
+    const destX  = (destObj.x || 400) + (destObj.width || 100) / 2;
+    const destY  = (destObj.y || 200) + (destObj.height || 80) / 2;
+
+    const midX = (startX + destX) / 2;
+    const midY = (startY + destY) / 2;
+
+    let intermediateZone = null;
+    let shortestDist = Infinity;
+
+    zones.forEach(z => {
+      if (z.id !== startObj.id && z.id !== destObj.id) {
+        const zCenterX = (z.x || 0) + (z.width || 100) / 2;
+        const zCenterY = (z.y || 0) + (z.height || 80) / 2;
+        const dist = Math.hypot(zCenterX - midX, zCenterY - midY);
+        if (dist < shortestDist) {
+          shortestDist = dist;
+          intermediateZone = z;
+        }
+      }
+    });
+
+    if (!intermediateZone) {
+      intermediateZone = zones.find(z => z.id !== startObj.id && z.id !== destObj.id) || { name: 'Central Concourse', current_occ: 500, capacity: 1000 };
     }
 
-    const flow = (await DataService.getFlowState(eventId)) || { recommendation_active: 0 };
-    const isRebalanced = flow.recommendation_active === 1;
+    const intermediateClean = intermediateZone.name.split('(')[0].trim();
+    const intermediateOcc   = intermediateZone.current_occ || Math.round((intermediateZone.capacity || 1000) * 0.5);
+    const intermediateCap   = intermediateZone.capacity || 1000;
+    const intermediatePct   = Math.round((intermediateOcc / intermediateCap) * 100);
 
-    let steps = [];
-    let etaMinutes = 6;
-    let recommendedRouteTitle = 'Primary Fast Corridor';
-    let crowdWarning = null;
-    let alternateSuggested = false;
+    const isBusy = intermediatePct >= 80;
+    const distPx = Math.hypot(destX - startX, destY - startY);
+    const etaMinutes = Math.max(1, Math.min(6, Math.round(distPx / 110) + (isBusy ? 1 : 0)));
 
-    const sessionTitle = session ? session.title : 'Keynote Session';
-    const sessionStage = session ? session.stage : 'Main Auditorium';
+    const steps = [
+      {
+        step: 1,
+        title: `Depart from ${startClean}`,
+        detail: `Proceed past entrance towards the main indoor walking aisle`,
+        duration_sec: 60,
+        icon: 'directions_walk',
+        status: 'normal',
+        zone_id: startObj.id
+      },
+      {
+        step: 2,
+        title: `Pass through ${intermediateClean}`,
+        detail: isBusy 
+          ? `High density alert (${intermediatePct}% full). Follow side corridor markers.`
+          : `Corridor clear (${intermediatePct}% capacity). Maintain direct walking pace.`,
+        duration_sec: 90,
+        icon: 'alt_route',
+        status: isBusy ? 'warning' : 'recommended',
+        zone_id: intermediateZone.id
+      },
+      {
+        step: 3,
+        title: `Arrive at ${destClean}`,
+        detail: `Welcome to ${destClean}. Present digital QR pass at room entrance.`,
+        duration_sec: 45,
+        icon: 'check_circle',
+        status: 'destination',
+        zone_id: destObj.id
+      }
+    ];
 
-    if (isRebalanced) {
-      alternateSuggested = true;
-      recommendedRouteTitle = 'Smart Flow Route via Station B & Courtyard';
-      etaMinutes = 4;
-      crowdWarning = 'Station A is busy (76%). Rerouting via Station B & Courtyard to save 3 mins.';
-      steps = [
-        { step: 1, title: 'Depart Gate 3 Concourse', detail: 'Proceed North towards Gate 2 digital sign array', duration_sec: 60, icon: 'directions_walk', status: 'normal' },
-        { step: 2, title: 'Follow Smart Wayfinding to Station B', detail: 'Take the open Exhibition A walking corridor (48% capacity)', duration_sec: 120, icon: 'alt_route', status: 'recommended' },
-        { step: 3, title: 'Cross Culinary Courtyard (Station C)', detail: 'Pass the Courtyard central fountain towards Studio B link', duration_sec: 90, icon: 'local_cafe', status: 'normal' },
-        { step: 4, title: 'Arrive at ' + sessionStage, detail: 'Check-in with digital pass for ' + sessionTitle, duration_sec: 30, icon: 'check_circle', status: 'destination' }
-      ];
-    } else {
-      crowdWarning = 'Station A is currently at 94% capacity. Expect moderate check-in queues at Door 2.';
-      steps = [
-        { step: 1, title: 'Depart South Concourse & Gate 3', detail: 'Walk North past Food Court (2 min)', duration_sec: 120, icon: 'directions_walk', status: 'normal' },
-        { step: 2, title: 'Enter Main Auditorium Concourse', detail: 'Turn Right into Station A Main Hall', duration_sec: 120, icon: 'turn_right', status: 'warning' },
-        { step: 3, title: 'Arrive at ' + sessionStage, detail: 'Doors open · Present digital pass at Door 2', duration_sec: 60, icon: 'meeting_room', status: 'destination' }
-      ];
-    }
+    const waypoints = [
+      { id: startObj.id, name: startClean, x: startX, y: startY },
+      { id: intermediateZone.id, name: intermediateClean, x: (intermediateZone.x || midX) + (intermediateZone.width || 100) / 2, y: (intermediateZone.y || midY) + (intermediateZone.height || 80) / 2, pct: intermediatePct },
+      { id: destObj.id, name: destClean, x: destX, y: destY }
+    ];
 
     const journeyId = 'JRN-' + Math.floor(10000 + Math.random() * 90000);
     const now = new Date().toISOString();
@@ -60,8 +112,8 @@ router.post('/plan', async (req, res) => {
         id: journeyId,
         user_id,
         event_id: eventId,
-        start_zone: start_zone || 'zone-south-gate',
-        destination_session: session ? session.id : 's1',
+        start_zone: startObj.id,
+        destination_session: destObj.id,
         route_steps_json: JSON.stringify(steps),
         eta_minutes: etaMinutes,
         status: 'active',
@@ -73,13 +125,14 @@ router.post('/plan', async (req, res) => {
       data: {
         journey_id: journeyId,
         event_id: eventId,
-        session: session || { title: 'General Event Walkthrough', stage: 'Main Stage' },
-        route_title: recommendedRouteTitle,
+        route_title: `Optimal Route: ${startClean} → ${destClean}`,
         eta_minutes: etaMinutes,
         steps,
-        crowd_warning: crowdWarning,
-        alternate_suggested: alternateSuggested,
-        flow_rebalanced: isRebalanced
+        waypoints,
+        start_zone: startObj,
+        dest_zone: destObj,
+        crowd_warning: isBusy ? `${intermediateClean} is reaching high density (${intermediatePct}%). Rerouted via open corridor.` : null,
+        alternate_suggested: isBusy
       }
     });
   } catch (err) {

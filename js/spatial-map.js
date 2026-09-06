@@ -323,27 +323,121 @@ window.SpatialMapEngine = class SpatialMapEngine {
       ctx.fill();
     });
 
-    // 4. Visitor Wayfinding Route
+    // 4. Visitor Dynamic Wayfinding Route
     if (this.mode === 'visitor' && this.zones.length >= 2) {
-      const zGate  = this.zones.find(z => z.name.includes('Gate') || z.id.includes('gate')) || this.zones[this.zones.length - 1];
-      const zQuad  = this.zones.find(z => z.name.includes('Quad') || z.id.includes('quad')) || this.zones[0];
-      const zDest  = this.zones.find(z => z.name.includes('Sports') || z.name.includes('Innovation') || z.name.includes('Canteen')) || this.zones[1];
+      const activeJourney = window.app && window.app.visitor && window.app.visitor.activeJourney;
 
-      ctx.beginPath();
-      ctx.setLineDash([6, 5]);
-      ctx.strokeStyle = '#F98383';
-      ctx.lineWidth = 3.5;
-      ctx.moveTo(zGate.x + zGate.width / 2, zGate.y + zGate.height / 2);
-      ctx.lineTo(zQuad.x + zQuad.width / 2, zQuad.y + zQuad.height / 2);
-      ctx.lineTo(zDest.x + zDest.width / 2, zDest.y + zDest.height / 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
+      let zStart = null;
+      let zDest  = null;
+      let zInter = null;
 
-      // Waypoint Pulse Node
-      ctx.beginPath();
-      ctx.arc(zQuad.x + zQuad.width / 2, zQuad.y + zQuad.height / 2, 7, 0, Math.PI * 2);
-      ctx.fillStyle = '#450D0D'; ctx.fill();
-      ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 2; ctx.stroke();
+      if (activeJourney && activeJourney.waypoints && activeJourney.waypoints.length >= 2) {
+        const wpStart = activeJourney.waypoints[0];
+        const wpInter = activeJourney.waypoints.length >= 3 ? activeJourney.waypoints[1] : null;
+        const wpDest  = activeJourney.waypoints[activeJourney.waypoints.length - 1];
+
+        zStart = this.zones.find(z => z.id === wpStart.id || z.name.toLowerCase().includes(wpStart.name.toLowerCase()));
+        if (wpInter) {
+          zInter = this.zones.find(z => z.id === wpInter.id || z.name.toLowerCase().includes(wpInter.name.toLowerCase()));
+        }
+        zDest  = this.zones.find(z => z.id === wpDest.id || z.name.toLowerCase().includes(wpDest.name.toLowerCase()));
+      }
+
+      // If not from active journey, fallback to selected zone or gates
+      if (!zStart) {
+        zStart = this.zones.find(z => z.name.toLowerCase().includes('gate') || z.name.toLowerCase().includes('entry')) || this.zones[this.zones.length - 1];
+      }
+      if (!zDest) {
+        zDest = this.selectedZone || this.zones.find(z => z.id !== zStart.id && !z.name.toLowerCase().includes('gate')) || this.zones[0];
+      }
+
+      if (zStart && zDest && zStart.id !== zDest.id) {
+        const sX = zStart.x + zStart.width / 2;
+        const sY = zStart.y + zStart.height / 2;
+        const dX = zDest.x + zDest.width / 2;
+        const dY = zDest.y + zDest.height / 2;
+
+        let mX = (sX + dX) / 2;
+        let mY = (sY + dY) / 2;
+
+        if (zInter) {
+          mX = zInter.x + zInter.width / 2;
+          mY = zInter.y + zInter.height / 2;
+        } else {
+          // Find closest intermediate zone center
+          let bestDist = Infinity;
+          this.zones.forEach(z => {
+            if (z.id !== zStart.id && z.id !== zDest.id) {
+              const cx = z.x + z.width / 2;
+              const cy = z.y + z.height / 2;
+              const dist = Math.hypot(cx - mX, cy - mY);
+              if (dist < bestDist) {
+                bestDist = dist;
+                zInter = z;
+                mX = cx;
+                mY = cy;
+              }
+            }
+          });
+        }
+
+        // A. Route Outer Halo
+        ctx.beginPath();
+        ctx.strokeStyle = 'rgba(159, 62, 65, 0.22)';
+        ctx.lineWidth = 8;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.moveTo(sX, sY);
+        if (zInter) ctx.lineTo(mX, mY);
+        ctx.lineTo(dX, dY);
+        ctx.stroke();
+
+        // B. Animated Dotted Walking Line
+        ctx.beginPath();
+        ctx.setLineDash([7, 5]);
+        ctx.lineDashOffset = -this.animTime * 16;
+        ctx.strokeStyle = '#9F3E41';
+        ctx.lineWidth = 3.5;
+        ctx.moveTo(sX, sY);
+        if (zInter) ctx.lineTo(mX, mY);
+        ctx.lineTo(dX, dY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // C. Start Pin (Green Node)
+        ctx.beginPath();
+        ctx.arc(sX, sY, 6.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#2D6A4F'; ctx.fill();
+        ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 2; ctx.stroke();
+
+        ctx.fillStyle = '#2D6A4F';
+        ctx.font = 'bold 9px "Archivo Narrow", sans-serif';
+        ctx.fillText('START', sX - 12, sY - 9);
+
+        // D. Waypoint Node (if applicable)
+        if (zInter) {
+          ctx.beginPath();
+          ctx.arc(mX, mY, 5, 0, Math.PI * 2);
+          ctx.fillStyle = '#D97706'; ctx.fill();
+          ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 1.5; ctx.stroke();
+        }
+
+        // E. Destination Pin (Pulsing Red Marker)
+        const pulse = 6 + Math.sin(this.animTime * 4) * 2;
+        ctx.beginPath();
+        ctx.arc(dX, dY, pulse + 3, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(159, 62, 65, 0.25)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(dX, dY, 7.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#450D0D'; ctx.fill();
+        ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 2; ctx.stroke();
+
+        ctx.fillStyle = '#450D0D';
+        ctx.font = 'bold 9px "Archivo Narrow", sans-serif';
+        ctx.fillText('DESTINATION', dX - 22, dY - 10);
+      }
     }
   }
 
