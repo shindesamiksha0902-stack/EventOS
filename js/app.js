@@ -567,8 +567,8 @@ window.EventosApp = class EventosApp {
           </div>
 
           <div class="paper-card rounded-2xl p-8 bg-white border border-[#EADFD0] shadow-xl">
-            <div class="flex items-center gap-3 mb-6">
-              <div class="w-11 h-11 rounded-xl flex items-center justify-center text-white" style="background:${accent}">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-11 h-11 rounded-xl flex items-center justify-center text-white shadow-sm" style="background:${accent}">
                 <span class="material-symbols-outlined text-2xl">${icon}</span>
               </div>
               <div>
@@ -576,27 +576,45 @@ window.EventosApp = class EventosApp {
                 <h2 class="font-headline text-xl font-medium text-[#450D0D]">Sign in to ${label}</h2>
               </div>
             </div>
-            <p class="font-body text-xs text-[#827473] mb-6">${tagline}</p>
+            <p class="font-body text-xs text-[#827473] mb-5">${tagline}</p>
+
+            <!-- Quick Demo Credentials Box -->
+            <div class="mb-5 p-3 rounded-xl bg-[#FFFBF5] border border-[#EADFD0]">
+              <div class="text-[10px] font-label font-bold uppercase text-[#827473] mb-2 flex items-center gap-1">
+                <span class="material-symbols-outlined text-sm text-[#9F3E41]">bolt</span>
+                <span>Instant 1-Click Demo Login:</span>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="window.app.quickLogin('visitor')" class="px-2.5 py-1.5 rounded-lg border border-[#9F3E41]/30 bg-rose-50/50 hover:bg-rose-100 text-[#9F3E41] text-[11px] font-label font-bold text-left flex items-center gap-1.5 transition-colors">
+                  <span class="material-symbols-outlined text-sm">person</span>
+                  <span>Visitor Demo</span>
+                </button>
+                <button type="button" onclick="window.app.quickLogin('organizer')" class="px-2.5 py-1.5 rounded-lg border border-[#450D0D]/30 bg-amber-50/50 hover:bg-amber-100 text-[#450D0D] text-[11px] font-label font-bold text-left flex items-center gap-1.5 transition-colors">
+                  <span class="material-symbols-outlined text-sm">shield</span>
+                  <span>Organizer Demo</span>
+                </button>
+              </div>
+            </div>
 
             <form onsubmit="window.app.handleLogin(event)" class="space-y-4">
               <div>
                 <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Email Address</label>
-                <input id="login-email" type="email" value="${prefillEmail || ''}" placeholder="you@example.com"
+                <input id="login-email" type="email" value="${prefillEmail || (isOrganizer ? 'admin@eventos.io' : 'alex@eventos.io')}" placeholder="you@example.com"
                   class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-4 py-2.5 text-sm font-body text-[#450D0D] focus:outline-none focus:border-[#9F3E41] focus:ring-1 focus:ring-[#9F3E41]" required/>
               </div>
               <div>
                 <label class="block text-xs font-label font-bold uppercase text-[#615E57] mb-1">Password</label>
-                <input id="login-pass" type="password" placeholder="••••••••"
+                <input id="login-pass" type="password" value="${isOrganizer ? 'admin123' : 'alex123'}" placeholder="••••••••"
                   class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] px-4 py-2.5 text-sm font-body text-[#450D0D] focus:outline-none focus:border-[#9F3E41] focus:ring-1 focus:ring-[#9F3E41]" required/>
               </div>
               <div class="flex items-center justify-between text-[11px] font-label text-[#827473]">
                 <label class="flex items-center gap-1.5 cursor-pointer">
                   <input type="checkbox" checked class="rounded border-[#EADFD0]"/> Remember me
                 </label>
-                <button type="button" onclick="window.app.toast('Please re-register or use demo credentials.', 'info')" class="hover:underline hover:text-[#9F3E41]">Help signing in?</button>
+                <button type="button" onclick="window.app.toast('Default demo password: alex123 or admin123', 'info')" class="hover:underline hover:text-[#9F3E41]">Password hint</button>
               </div>
               <button type="submit"
-                class="w-full py-3 rounded-xl text-white text-xs font-label font-bold uppercase tracking-wider transition-colors hover:opacity-90"
+                class="w-full py-3 rounded-xl text-white text-xs font-label font-bold uppercase tracking-wider transition-colors hover:opacity-90 shadow-sm"
                 style="background:${accent}">
                 Sign In &amp; Enter ${label} \u2192
               </button>
@@ -615,14 +633,34 @@ window.EventosApp = class EventosApp {
     `;
   }
 
-  async handleLogin(e) {
-    e.preventDefault();
-    const email    = document.getElementById('login-email').value.trim();
-    const password = document.getElementById('login-pass').value.trim();
-    const btn      = e.target.querySelector('button[type="submit"]');
+  quickLogin(role = 'visitor') {
+    this._pendingRole = role;
+    const email = role === 'organizer' ? 'admin@eventos.io' : 'alex@eventos.io';
+    const pass  = role === 'organizer' ? 'admin123' : 'alex123';
 
-    if (!email || !password) {
-      this.toast('Please enter your email and password.', 'warning');
+    const emailInput = document.getElementById('login-email');
+    const passInput  = document.getElementById('login-pass');
+    if (emailInput) emailInput.value = email;
+    if (passInput) passInput.value = pass;
+
+    // Trigger form submit
+    const form = document.querySelector('form');
+    if (form) {
+      const submitEv = new Event('submit', { cancelable: true, bubbles: true });
+      form.dispatchEvent(submitEv);
+    }
+  }
+
+  async handleLogin(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const emailInput = document.getElementById('login-email');
+    const passInput  = document.getElementById('login-pass');
+    const email    = emailInput ? emailInput.value.trim() : '';
+    const password = passInput ? passInput.value.trim() : '';
+    const btn      = document.querySelector('form button[type="submit"]');
+
+    if (!email) {
+      this.toast('Please enter your email address.', 'warning');
       return;
     }
 
@@ -632,14 +670,16 @@ window.EventosApp = class EventosApp {
 
     try {
       const data = await window.EventosAPI.loginUserWithPassword(email, password, role);
-      const user = data.user;
+      const user = data.user || { id: 'user-demo', name: email.split('@')[0], role };
       const events = data.events || [];
       const activeEvent = data.active_event || events[0] || null;
 
       this.setState('userId', user.id);
-      this.setState('userName', user.name);
+      this.setState('userName', user.name || 'Alex Morgan');
       this.setState('role', user.role || role);
-      this.setState('userEvents', events.length ? events : this.state.userEvents);
+      if (events.length) {
+        this.setState('userEvents', events);
+      }
       if (activeEvent) {
         this.setState('activeEventId', activeEvent.id);
       }
