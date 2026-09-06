@@ -211,13 +211,23 @@ window.VisitorModule = class VisitorModule {
     this._currentZones = zones;
     this.allSessions = sessions;
 
+    // Separate gates and destinations for intuitive selection
+    const startOptions = [...zones];
+    const destOptions = [...zones].sort((a, b) => {
+      const aIsGate = a.name.toLowerCase().includes('gate') || a.name.toLowerCase().includes('entry');
+      const bIsGate = b.name.toLowerCase().includes('gate') || b.name.toLowerCase().includes('entry');
+      if (!aIsGate && bIsGate) return -1;
+      if (aIsGate && !bIsGate) return 1;
+      return 0;
+    });
+
     container.innerHTML = `
       <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <div class="bg-gradient-to-r from-[#FFFBF5] to-white p-8 rounded-2xl border border-[#EADFD0] mb-8 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span class="px-3 py-1 rounded-full bg-[#9F3E41] text-white text-xs font-label uppercase font-bold tracking-wider inline-block mb-3">INTELLIGENT WAYFINDING</span>
             <h1 class="font-headline text-3xl font-medium text-[#450D0D] mb-1">Plan Your Event Journey</h1>
-            <p class="font-body text-xs text-[#615E57]">Select your destination session in <strong class="text-[#450D0D]">${eventTitle}</strong> to receive crowd-balanced indoor walking directions.</p>
+            <p class="font-body text-xs text-[#615E57]">Select any starting point and destination room in <strong class="text-[#450D0D]">${eventTitle}</strong> for indoor crowd-balanced directions.</p>
           </div>
           <button onclick="window.app.navigate('visitor-find')" class="hidden sm:inline-flex items-center gap-1 text-xs font-label uppercase font-bold text-[#827473] hover:text-[#450D0D]">
             <span class="material-symbols-outlined text-base">arrow_back</span> Back
@@ -235,16 +245,16 @@ window.VisitorModule = class VisitorModule {
               <div>
                 <label class="block font-label font-bold uppercase text-[#827473] mb-1">Starting Location / Gate</label>
                 <select id="journey-start" class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] p-2.5 text-xs text-[#450D0D] focus:outline-none focus:border-[#9F3E41]">
-                  ${zones.map(z => `
+                  ${startOptions.map(z => `
                     <option value="${z.id}">${z.name}</option>
                   `).join('')}
                 </select>
               </div>
               <div>
-                <label class="block font-label font-bold uppercase text-[#827473] mb-1">Destination Session</label>
+                <label class="block font-label font-bold uppercase text-[#827473] mb-1">Destination Room / Area on Map</label>
                 <select id="journey-session" class="w-full rounded-lg border border-[#EADFD0] bg-[#FFFBF5] p-2.5 text-xs text-[#450D0D] focus:outline-none focus:border-[#9F3E41]">
-                  ${sessions.map(s => `
-                    <option value="${s.id}">${s.time_label} · ${s.title} (${s.stage})</option>
+                  ${destOptions.map(z => `
+                    <option value="${z.id}">${z.name}</option>
                   `).join('')}
                 </select>
               </div>
@@ -277,10 +287,10 @@ window.VisitorModule = class VisitorModule {
     const resultsBox    = document.getElementById('journey-results-box');
     if (!resultsBox) return;
 
-    const sessionId = sessionSelect ? sessionSelect.value : '';
+    const destId    = sessionSelect ? sessionSelect.value : '';
     const startZone = startSelect ? startSelect.value : '';
 
-    const sessionObj   = (this.allSessions || []).find(s => s.id === sessionId);
+    const destZoneObj  = (this._currentZones || []).find(z => z.id === destId) || (this.allSessions || []).find(s => s.id === destId);
     const startZoneObj = (this._currentZones || []).find(z => z.id === startZone);
 
     resultsBox.innerHTML = `
@@ -291,7 +301,7 @@ window.VisitorModule = class VisitorModule {
     `;
 
     try {
-      const data = await window.EventosAPI.planJourney(this.userId, this.eventId, sessionId, startZone, sessionObj, startZoneObj);
+      const data = await window.EventosAPI.planJourney(this.userId, this.eventId, destId, startZone, destZoneObj, startZoneObj);
       this.activeJourney = data;
 
       resultsBox.innerHTML = `
@@ -388,9 +398,23 @@ window.VisitorModule = class VisitorModule {
 
     // Find pass matching active event, or use the latest pass
     const currentPass = this.userPasses.find(p => p.eventId === eventId) || this.userPasses[this.userPasses.length - 1];
-    this.allSessions = eventSessions.length ? eventSessions : [
-      { id: `s-${eventId}-1`, time_label: '10:00 AM', title: `Welcome to ${eventTitle}`, stage: 'Main Stage', speaker: 'Event Keynote' }
-    ];
+
+    if (!eventSessions.length) {
+      let zones = [];
+      try {
+        zones = await window.EventosAPI.getZones(eventId);
+      } catch (e) {}
+      const zNames = (zones && zones.length) ? zones.map(z => z.name) : ['Quad Area (Main Stage & Lawn)', 'Canteen & Food Court (Gate 03)', 'Multipurpose Sports Complex'];
+      this.allSessions = [
+        { id: `s-${eventId}-1`, time_label: '09:30 AM', title: `${eventTitle} - Opening Ceremony`, stage: zNames[0] || 'Main Stage', speaker: 'Keynote Presenter' },
+        { id: `s-${eventId}-2`, time_label: '11:30 AM', title: `Technical Exhibition & Demonstrations`, stage: zNames[2] || zNames[1] || 'Sports Complex', speaker: 'Department Leads' },
+        { id: `s-${eventId}-3`, time_label: '01:00 PM', title: `Networking & Refreshment Session`, stage: zNames[1] || 'Canteen Area', speaker: 'All Attendees' },
+        { id: `s-${eventId}-4`, time_label: '03:00 PM', title: `Interactive Workshop & Innovation Showcase`, stage: zNames[6] || zNames[3] || 'Innovation Centre', speaker: 'Research Mentors' },
+        { id: `s-${eventId}-5`, time_label: '05:00 PM', title: `Valedictory & Awards Ceremony`, stage: zNames[0] || 'Main Stage', speaker: 'Organizing Committee' }
+      ];
+    } else {
+      this.allSessions = eventSessions;
+    }
 
     container.innerHTML = `
       <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">

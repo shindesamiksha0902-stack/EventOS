@@ -479,14 +479,19 @@ window.EventosAPI = {
       }
     } catch (err) {}
 
-    // Default Pillai blueprint zones
+    // Default Pillai blueprint zones matching map provided by user
     return [
-      { id: `${eventId}-z1`, event_id: eventId, name: 'Quad Area (Main Concourse)', capacity: 5500, current_occ: 4850, x: 155, y: 125, width: 230, height: 110 },
-      { id: `${eventId}-z2`, event_id: eventId, name: 'Canteen & Food Court', capacity: 1800, current_occ: 1350, x: 35, y: 20, width: 100, height: 75 },
-      { id: `${eventId}-z3`, event_id: eventId, name: 'Multipurpose Sports Complex', capacity: 2200, current_occ: 980, x: 520, y: 205, width: 105, height: 120 },
-      { id: `${eventId}-z4`, event_id: eventId, name: 'Gymkhana & Sports Area', capacity: 1200, current_occ: 600, x: 520, y: 70, width: 105, height: 75 },
-      { id: `${eventId}-z5`, event_id: eventId, name: 'Engineering Wing Labs', capacity: 1000, current_occ: 450, x: 35, y: 280, width: 100, height: 100 },
-      { id: `${eventId}-z6`, event_id: eventId, name: 'Gate 01 Main Entry', capacity: 3000, current_occ: 2450, x: 430, y: 415, width: 110, height: 50 }
+      { id: `${eventId}-z1`,  event_id: eventId, name: 'Quad Area (Main Stage & Lawn)', capacity: 5000, current_occ: 3850, x: 155, y: 125, width: 230, height: 110 },
+      { id: `${eventId}-z2`,  event_id: eventId, name: 'Canteen & Food Court (Gate 03)', capacity: 1800, current_occ: 1350, x: 35, y: 20, width: 100, height: 75 },
+      { id: `${eventId}-z3`,  event_id: eventId, name: 'Multipurpose Sports Complex', capacity: 2200, current_occ: 980, x: 520, y: 205, width: 105, height: 120 },
+      { id: `${eventId}-z4`,  event_id: eventId, name: 'Gymkhana & Indoor Sports', capacity: 1200, current_occ: 600, x: 520, y: 70, width: 105, height: 75 },
+      { id: `${eventId}-z5`,  event_id: eventId, name: 'Football Ground Arena', capacity: 3000, current_occ: 850, x: 520, y: 345, width: 105, height: 100 },
+      { id: `${eventId}-z6`,  event_id: eventId, name: 'Central Library & Study Zone', capacity: 900, current_occ: 320, x: 165, y: 75, width: 85, height: 45 },
+      { id: `${eventId}-z7`,  event_id: eventId, name: 'Innovation & Research Centre', capacity: 850, current_occ: 280, x: 395, y: 125, width: 100, height: 55 },
+      { id: `${eventId}-z8`,  event_id: eventId, name: 'Engineering Workshop & Labs', capacity: 1000, current_occ: 450, x: 380, y: 35, width: 110, height: 60 },
+      { id: `${eventId}-z9`,  event_id: eventId, name: 'Department of IT & Classrooms', capacity: 1100, current_occ: 520, x: 65, y: 205, width: 85, height: 95 },
+      { id: `${eventId}-z10`, event_id: eventId, name: 'Admin Wing & Principal Office', capacity: 1200, current_occ: 380, x: 220, y: 250, width: 165, height: 75 },
+      { id: `${eventId}-z11`, event_id: eventId, name: 'Gate No. 01 Main Check-in', capacity: 3000, current_occ: 2450, x: 430, y: 415, width: 110, height: 50 }
     ];
   },
 
@@ -672,11 +677,12 @@ window.EventosAPI = {
       });
     } catch (e) {
       const startName = (startZoneObj && startZoneObj.name) ? startZoneObj.name : 'Main Entry Gate';
-      const destName  = (sessionObj && sessionObj.stage) ? sessionObj.stage : ((sessionObj && sessionObj.title) ? sessionObj.title : 'Session Auditorium');
-      const sessTitle = (sessionObj && sessionObj.title) ? sessionObj.title : 'Selected Session';
+      const destName  = (sessionObj && sessionObj.name) ? sessionObj.name : ((sessionObj && sessionObj.stage) ? sessionObj.stage : ((sessionObj && sessionObj.title) ? sessionObj.title : 'Destination Venue'));
+      const startClean = startName.split('(')[0].trim();
+      const destClean  = destName.split('(')[0].trim();
 
       const zones = await this.getZones(eventId);
-      const intermediateZone = zones.find(z => z.id !== (startZoneObj && startZoneObj.id) && !z.name.toLowerCase().includes('gate')) || zones[1] || { name: 'Central Concourse' };
+      const intermediateZone = zones.find(z => z.id !== (startZoneObj && startZoneObj.id) && z.id !== (sessionObj && sessionObj.id) && !z.name.toLowerCase().includes('gate')) || zones[1] || { name: 'Central Concourse' };
       const intermediateName = intermediateZone.name.split('(')[0].trim();
       const intermediateOcc  = intermediateZone.current_occ || Math.round((intermediateZone.capacity || 1000) * 0.5);
       const intermediatePct  = Math.round((intermediateOcc / (intermediateZone.capacity || 1000)) * 100);
@@ -686,17 +692,17 @@ window.EventosAPI = {
       return {
         journey_id: 'JRN-' + Date.now(),
         event_id: eventId,
-        route_title: `Fast-Track Route: ${startName.split('(')[0].trim()} → ${destName.split('(')[0].trim()}`,
+        route_title: `Optimal Route: ${startClean} → ${destClean}`,
         eta_minutes: Math.max(2, Math.min(6, Math.round(2 + Math.random() * 2))),
         alternate_suggested: isBusy,
         crowd_warning: isBusy 
           ? `${intermediateName} is reaching high density (${intermediatePct}%). Wayfinding directed through open side corridor.`
-          : `All walking corridors between ${startName.split('(')[0].trim()} and ${destName.split('(')[0].trim()} are clear and optimal.`,
+          : `Corridors between ${startClean} and ${destClean} are clear with optimal flow.`,
         steps: [
           { 
             step: 1, 
-            title: `Depart from ${startName}`, 
-            detail: 'Proceed past check-in digital display towards main walking aisle', 
+            title: `Depart from ${startClean}`, 
+            detail: `Proceed past entrance towards the main indoor walking aisle`, 
             duration_sec: 60, 
             icon: 'directions_walk', 
             status: 'normal' 
@@ -704,15 +710,15 @@ window.EventosAPI = {
           { 
             step: 2, 
             title: `Pass through ${intermediateName}`, 
-            detail: `Follow indoor navigation markers (${intermediatePct}% capacity · Flow smooth)`, 
+            detail: `Follow indoor navigation signs (${intermediatePct}% capacity · Flow smooth)`, 
             duration_sec: 90, 
             icon: 'alt_route', 
             status: isBusy ? 'warning' : 'recommended' 
           },
           { 
             step: 3, 
-            title: `Arrive at ${destName}`, 
-            detail: `Doors open for "${sessTitle}" · Present digital QR pass for access`, 
+            title: `Arrive at ${destClean}`, 
+            detail: `Present digital QR pass at ${destClean} for entrance access`, 
             duration_sec: 45, 
             icon: 'check_circle', 
             status: 'destination' 
