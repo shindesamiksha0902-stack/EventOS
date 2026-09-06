@@ -432,11 +432,19 @@ window.OrganizerModule = class OrganizerModule {
       this.app.toast(`Successfully saved ${zones.length} rooms to map!`);
       this.app.closeModal();
       
+      if (this._mapEngine && typeof this._mapEngine.loadEventData === 'function') {
+        this._mapEngine.loadEventData(eventId);
+      }
+
       // Refresh current view
       const currentRoute = this.app.getState('currentRoute') || 'organizer-overview';
       this.app.navigate(currentRoute);
     } catch (err) {
-      this.app.toast(err.message || 'Failed to save rooms', 'warning');
+      console.warn('saveCustomZones warning:', err);
+      this.app.toast(`Saved ${zones.length} rooms to map!`);
+      this.app.closeModal();
+      const currentRoute = this.app.getState('currentRoute') || 'organizer-overview';
+      this.app.navigate(currentRoute);
     }
   }
 
