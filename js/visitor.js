@@ -155,6 +155,9 @@ window.VisitorModule = class VisitorModule {
             <button onclick="window.app.closeModal(); window.app.visitor.openTicketModal('${event.id}','${(event.title || '').replace(/'/g,"\\'")}')" class="flex-1 py-3 rounded-lg bg-[#9F3E41] hover:bg-[#450D0D] text-white font-label font-bold text-xs uppercase tracking-wider transition-colors">
               Get Pass
             </button>
+            <button onclick="window.app.closeModal(); window.app.deleteEventById('${event.id}');" title="Remove / Delete this event" class="px-3 py-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-600 hover:text-white transition-colors">
+              <span class="material-symbols-outlined text-sm">delete</span>
+            </button>
           </div>
         </div>
       `;

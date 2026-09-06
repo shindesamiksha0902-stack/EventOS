@@ -124,4 +124,16 @@ router.get('/:id/live-state', async (req, res) => {
   }
 });
 
+// DELETE /api/events/:id — Delete an event and associated data
+router.delete('/:id', async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    await DataService.deleteEvent(eventId);
+    res.json({ data: { success: true, id: eventId } });
+  } catch (err) {
+    console.error('[events/:id DELETE error]', err);
+    res.status(500).json({ error: err.message || 'Failed to delete event' });
+  }
+});
+
 module.exports = router;

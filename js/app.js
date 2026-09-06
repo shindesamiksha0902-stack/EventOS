@@ -181,6 +181,44 @@ window.EventosApp = class EventosApp {
     this.navigate(current);
   }
 
+  async deleteCurrentEvent() {
+    const activeId = this.getActiveEventId();
+    await this.deleteEventById(activeId);
+  }
+
+  async deleteEventById(eventId, skipConfirm = false) {
+    if (!eventId) return;
+    const events = this.state.userEvents || [];
+    const target = events.find(e => e.id === eventId) || { id: eventId, title: eventId };
+    
+    if (!skipConfirm) {
+      const ok = confirm(`Are you sure you want to remove and delete the event "${target.title || target.id}"? This will clear its zones, passes, and blueprints.`);
+      if (!ok) return;
+    }
+
+    try {
+      await window.EventosAPI.deleteEvent(eventId);
+    } catch (e) {
+      console.warn('[EventOS] Delete error:', e);
+    }
+
+    // Filter out from local state
+    const updatedEvents = events.filter(e => e.id !== eventId);
+    this.setState('userEvents', updatedEvents);
+
+    // If active event was the deleted one, switch to next available
+    if (this.state.activeEventId === eventId) {
+      const nextId = updatedEvents.length > 0 ? updatedEvents[0].id : 'aarpo-26';
+      this.setState('activeEventId', nextId);
+      if (this.organizer) this.organizer.eventId = nextId;
+    }
+
+    this.toast(`Event "${target.title || eventId}" removed.`);
+    this.updateHeader();
+    const current = this.state.currentRoute || 'visitor-find';
+    this.navigate(current);
+  }
+
   setRole(role) {
     this._pendingRole = role;
     this.renderRegister(document.getElementById('view-container'), role);
@@ -834,12 +872,19 @@ window.EventosApp = class EventosApp {
               </select>
             </div>
 
+            <!-- Delete Event Button -->
+            <button onclick="window.app.deleteCurrentEvent()" 
+              title="Remove / Delete this event"
+              class="p-1 rounded-lg bg-[#FFFBF5] hover:bg-rose-600 hover:text-white border border-[#EADFD0] text-rose-700 text-xs transition-colors flex items-center justify-center">
+              <span class="material-symbols-outlined text-sm">delete</span>
+            </button>
+
             <!-- Add Event Button -->
             <button onclick="window.app.openAddEventModal()" 
               title="Add / Register another event"
               class="px-2.5 py-1 rounded-lg bg-[#FFFBF5] hover:bg-[#9F3E41] hover:text-white border border-[#EADFD0] text-[#9F3E41] text-xs font-label font-bold uppercase transition-colors flex items-center gap-0.5">
               <span class="material-symbols-outlined text-sm">add</span>
-              <span class="hidden lg:inline">Add Event</span>
+              <span class="hidden lg:inline">Add</span>
             </button>
           </div>
         </div>
@@ -936,11 +981,15 @@ window.EventosApp = class EventosApp {
             <span>Current Active Event</span>
             <span class="text-[#9F3E41] font-bold">${role === 'organizer' ? 'ORGANIZER' : 'VISITOR'}</span>
           </label>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1.5">
             <select onchange="window.app.switchEvent(this.value); window.app.closeMobileMenu();"
               class="flex-1 bg-[#FFFBF5] border border-[#EADFD0] rounded-lg px-3 py-2 text-xs font-label font-bold text-[#450D0D] focus:outline-none">
               ${eventOptions || `<option value="aarpo-26">AARPO World Summit 2026</option>`}
             </select>
+            <button onclick="window.app.deleteCurrentEvent(); window.app.closeMobileMenu();"
+              class="px-2.5 py-2 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-600 hover:text-white text-xs font-label font-bold flex items-center gap-1 shrink-0 shadow-sm" title="Remove / Delete Active Event">
+              <span class="material-symbols-outlined text-sm">delete</span>
+            </button>
             <button onclick="window.app.openAddEventModal(); window.app.closeMobileMenu();"
               class="px-3 py-2 rounded-lg bg-[#9F3E41] text-white text-xs font-label font-bold uppercase flex items-center gap-1 shrink-0 shadow-sm" title="Add Event">
               <span class="material-symbols-outlined text-sm">add</span>
@@ -1004,6 +1053,7 @@ window.EventosApp = class EventosApp {
   openAddEventModal() {
     const role = this.getState('role');
     const isOrganizer = role === 'organizer';
+    const events = this.state.userEvents || [];
 
     const defaultRooms = [
       { name: 'Quad Area (Main Stage & Lawn)', cap: 5000, x: 155, y: 125, w: 230, h: 110 },
@@ -1019,6 +1069,34 @@ window.EventosApp = class EventosApp {
       { name: 'Gate No. 01 Main Check-in', cap: 3000, x: 430, y: 415, w: 110, h: 50 }
     ];
 
+    const eventsListHtml = events.length ? `
+      <div class="mb-5 p-3.5 bg-[#FFFBF5] rounded-xl border border-[#EADFD0]">
+        <label class="block text-[11px] font-label font-bold uppercase text-[#827473] mb-2 flex items-center justify-between">
+          <span>Active Events (${events.length})</span>
+          <span class="text-[10px] text-[#9F3E41]">Click 🗑️ to remove any event</span>
+        </label>
+        <div class="space-y-1.5 max-h-36 overflow-y-auto">
+          ${events.map(ev => `
+            <div class="flex items-center justify-between p-2 bg-white rounded-lg border border-[#EADFD0] text-xs">
+              <div class="flex items-center gap-2 truncate pr-2">
+                <span class="material-symbols-outlined text-sm text-[#9F3E41]">event</span>
+                <span class="font-body font-semibold text-[#450D0D] truncate">${ev.title || ev.id}</span>
+                <span class="text-[10px] font-label text-[#827473]">(${ev.location || 'Venue'})</span>
+              </div>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" onclick="window.app.switchEvent('${ev.id}'); window.app.closeModal();" class="px-2 py-0.5 rounded bg-amber-50 text-amber-900 border border-amber-200 text-[10px] font-label font-bold uppercase hover:bg-amber-100">
+                  Select
+                </button>
+                <button type="button" onclick="window.app.deleteEventById('${ev.id}'); window.app.openAddEventModal();" class="p-1 rounded text-rose-600 hover:bg-rose-50 transition-colors" title="Delete / Remove this event">
+                  <span class="material-symbols-outlined text-sm">delete</span>
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    ` : '';
+
     const html = `
       <div class="p-6 max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between pb-3 mb-4 border-b border-[#EADFD0]">
@@ -1031,6 +1109,12 @@ window.EventosApp = class EventosApp {
           <button onclick="window.app.closeModal()" class="text-[#827473] hover:text-[#450D0D]">
             <span class="material-symbols-outlined text-xl">close</span>
           </button>
+        </div>
+
+        ${eventsListHtml}
+
+        <div class="pt-1 mb-3">
+          <span class="text-xs font-label uppercase font-bold text-[#9F3E41]">➕ Add New Custom Event</span>
         </div>
 
         <form onsubmit="window.app.handleAddEventSubmit(event)" class="space-y-4">

@@ -194,6 +194,29 @@ const DataService = {
     return this.getEventById(id);
   },
 
+  async deleteEvent(id) {
+    if (useSupabase()) {
+      try {
+        await getSupabase().from('zones').delete().eq('event_id', id);
+        await getSupabase().from('sessions').delete().eq('event_id', id);
+        await getSupabase().from('passes').delete().eq('event_id', id);
+        await getSupabase().from('visitor_events').delete().eq('event_id', id);
+        await getSupabase().from('events').delete().eq('id', id);
+      } catch (e) {
+        console.warn('[dataService] deleteEvent error:', e.message);
+      }
+      return true;
+    }
+    const db = getDb();
+    run(db, 'DELETE FROM zones WHERE event_id = ?', [id]);
+    run(db, 'DELETE FROM sessions WHERE event_id = ?', [id]);
+    run(db, 'DELETE FROM passes WHERE event_id = ?', [id]);
+    run(db, 'DELETE FROM visitor_events WHERE event_id = ?', [id]);
+    run(db, 'DELETE FROM events WHERE id = ?', [id]);
+    persist();
+    return true;
+  },
+
   async getUserEvents(userId, role) {
     if (useSupabase()) {
       if (role === 'organizer') {

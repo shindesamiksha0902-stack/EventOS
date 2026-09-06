@@ -459,6 +459,32 @@ window.EventosAPI = {
     };
   },
 
+  async deleteEvent(eventId) {
+    if (!eventId) return { success: false };
+
+    // 1. Remove from local custom events
+    try {
+      const customEvents = this._getCustomEvents().filter(e => e.id !== eventId);
+      this._saveCustomEvents(customEvents);
+    } catch (e) {}
+
+    // 2. Remove zones cache
+    try {
+      localStorage.removeItem('eventos_zones_' + eventId);
+    } catch (e) {}
+
+    // 3. Attempt backend deletion
+    try {
+      await this._fetch('/events/' + encodeURIComponent(eventId), {
+        method: 'DELETE'
+      });
+    } catch (e) {
+      console.warn('[EventOS] Backend delete skipped/failed, deleted locally:', e.message);
+    }
+
+    return { success: true, eventId };
+  },
+
   // -- Zones ---------------------------------------------------
   async getZones(eventId) {
     const localKey = 'eventos_zones_' + eventId;
