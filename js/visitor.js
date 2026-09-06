@@ -298,18 +298,25 @@ window.VisitorModule = class VisitorModule {
           ` : ''}
 
           <div class="space-y-2 mb-4 font-body text-xs">
-            ${data.steps.map(s => `
-              <div class="p-3 rounded-xl border bg-white flex items-center justify-between ${s.status === 'recommended' ? 'border-emerald-300 bg-emerald-50/40' : 'border-[#EADFD0]'}">
-                <div class="flex items-center gap-3">
-                  <span class="w-6 h-6 rounded-full bg-[#450D0D] text-white flex items-center justify-center font-bold text-xs">${s.step}</span>
-                  <div>
-                    <p class="font-bold text-[#450D0D]">${s.title}</p>
-                    <p class="text-[11px] text-[#827473]">${s.detail}</p>
+            ${(data.steps || []).map((s, idx) => {
+              const stepNum = typeof s === 'object' ? (s.step || idx + 1) : (idx + 1);
+              const title   = typeof s === 'object' ? (s.title || 'Navigation Waypoint') : s;
+              const detail  = typeof s === 'object' ? (s.detail || 'Follow digital signage and floor markers') : 'Proceed along indoor corridor';
+              const icon    = typeof s === 'object' ? (s.icon || 'directions_walk') : 'directions_walk';
+              const isRec   = typeof s === 'object' && s.status === 'recommended';
+              return `
+                <div class="p-3 rounded-xl border bg-white flex items-center justify-between ${isRec ? 'border-emerald-300 bg-emerald-50/40' : 'border-[#EADFD0]'}">
+                  <div class="flex items-center gap-3">
+                    <span class="w-6 h-6 rounded-full bg-[#450D0D] text-white flex items-center justify-center font-bold text-xs">${stepNum}</span>
+                    <div>
+                      <p class="font-bold text-[#450D0D]">${title}</p>
+                      <p class="text-[11px] text-[#827473]">${detail}</p>
+                    </div>
                   </div>
+                  <span class="material-symbols-outlined text-base text-[#827473]">${icon}</span>
                 </div>
-                <span class="material-symbols-outlined text-base text-[#827473]">${s.icon}</span>
-              </div>
-            `).join('')}
+              `;
+            }).join('')}
           </div>
 
           <button onclick="window.app.navigate('visitor-live')" class="w-full py-2.5 rounded-xl bg-[#9F3E41] hover:bg-[#450D0D] text-white font-label font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2">

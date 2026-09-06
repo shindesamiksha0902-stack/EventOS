@@ -1,6 +1,11 @@
 /* js/spatial-map.js — Dynamic Event-Driven Spatial Map Engine with Blueprint Support */
 window.SpatialMapEngine = class SpatialMapEngine {
   constructor(canvasId, options = {}) {
+    if (window._activeSpatialEngine && typeof window._activeSpatialEngine.stopAnimation === 'function') {
+      window._activeSpatialEngine.stopAnimation();
+    }
+    window._activeSpatialEngine = this;
+
     this.canvas = document.getElementById(canvasId);
     if (!this.canvas) return;
     this.ctx = this.canvas.getContext('2d');
@@ -16,6 +21,7 @@ window.SpatialMapEngine = class SpatialMapEngine {
     this.blueprintImg = null;
     this.hasBlueprint = false;
     this.animTime = 0;
+    this._isRunning = true;
 
     this.setupEvents();
     this.loadEventData(this.eventId);
@@ -345,14 +351,28 @@ window.SpatialMapEngine = class SpatialMapEngine {
   }
 
   startAnimation() {
-    const loop = () => {
-      this.draw();
+    let lastTime = 0;
+    const loop = (time) => {
+      if (!this._isRunning) return;
+      if (!this.canvas || !this.canvas.isConnected) {
+        this.stopAnimation();
+        return;
+      }
+      // Cap at ~40 FPS for super smooth battery-friendly performance
+      if (time - lastTime >= 24) {
+        lastTime = time;
+        this.draw();
+      }
       this.animFrame = requestAnimationFrame(loop);
     };
-    loop();
+    this.animFrame = requestAnimationFrame(loop);
   }
 
   stopAnimation() {
-    if (this.animFrame) cancelAnimationFrame(this.animFrame);
+    this._isRunning = false;
+    if (this.animFrame) {
+      cancelAnimationFrame(this.animFrame);
+      this.animFrame = null;
+    }
   }
 };
