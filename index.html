@@ -67,9 +67,14 @@
       </nav>
 
       <!-- Switch Mode Button + Live API dot -->
-      <div id="header-right-actions" class="flex items-center gap-3">
+      <div id="header-right-actions" class="flex items-center gap-2 sm:gap-3">
         <!-- Injected dynamically by JS based on login/auth state -->
       </div>
+    </div>
+
+    <!-- Mobile Navigation Drawer (Toggled on phones) -->
+    <div id="mobile-nav-drawer" class="hidden md:hidden border-t border-[#EADFD0] bg-[#FFFBF5] px-4 py-4 space-y-3 shadow-lg transition-all">
+      <!-- Injected dynamically by JS -->
     </div>
   </header>
 
@@ -79,8 +84,8 @@
   </main>
 
   <!-- Global Modal Dialog Backdrop -->
-  <div id="global-modal-backdrop" class="fixed inset-0 modal-backdrop z-50 hidden items-center justify-center p-4">
-    <div class="paper-card rounded-2xl max-w-md w-full bg-white shadow-2xl relative overflow-hidden">
+  <div id="global-modal-backdrop" class="fixed inset-0 modal-backdrop z-50 hidden items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="paper-card rounded-2xl max-w-lg w-full bg-white shadow-2xl relative overflow-hidden my-auto max-h-[90vh]">
       <div id="global-modal-content"></div>
     </div>
   </div>

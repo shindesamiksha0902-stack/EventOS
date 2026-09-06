@@ -95,6 +95,39 @@ body {
 
 /* Modal Backdrops */
 .modal-backdrop {
-  background-color: rgba(69, 13, 13, 0.4);
-  backdrop-filter: blur(4px);
+  background-color: rgba(69, 13, 13, 0.45);
+  backdrop-filter: blur(6px);
+}
+
+/* Mobile Responsive Optimizations */
+@media (max-width: 640px) {
+  html, body {
+    font-size: 14px;
+    overflow-x: hidden;
+  }
+
+  input, select, textarea, button {
+    font-size: 14px !important;
+  }
+
+  .paper-card {
+    padding: 1rem !important;
+    border-radius: 1rem !important;
+  }
+
+  canvas {
+    touch-action: pan-y pinch-zoom;
+    max-width: 100% !important;
+  }
+
+  #global-modal-backdrop .paper-card {
+    max-width: 95vw !important;
+    margin: 0.5rem auto !important;
+    max-height: 90vh !important;
+  }
+}
+
+/* Smooth Touch Scrolling */
+.overflow-x-auto, .overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
 }

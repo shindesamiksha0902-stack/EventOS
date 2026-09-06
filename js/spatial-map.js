@@ -167,6 +167,23 @@ window.SpatialMapEngine = class SpatialMapEngine {
         this.selectedZone = null;
       }
     });
+
+    // Mobile touch support
+    this.canvas.addEventListener('touchstart', (e) => {
+      if (!e.touches || !e.touches.length) return;
+      const touch = e.touches[0];
+      const pos = getPos(touch);
+      const clickedZone = this.zones.find(z => 
+        pos.x >= z.x && pos.x <= z.x + z.width &&
+        pos.y >= z.y && pos.y <= z.y + z.height
+      );
+
+      if (clickedZone) {
+        this.selectedZone = clickedZone;
+        this.hoveredZone = clickedZone;
+        if (this.onZoneSelect) this.onZoneSelect(clickedZone);
+      }
+    }, { passive: true });
   }
 
   setViewStyle(style) {

@@ -763,13 +763,17 @@ window.EventosApp = class EventosApp {
 
     if (rightActions) {
       rightActions.innerHTML = `
-        <button onclick="window.app.showApiSettingsModal ? window.app.showApiSettingsModal() : null" class="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer" title="Click to view or change Backend API URL">
+        <button onclick="window.app.showApiSettingsModal ? window.app.showApiSettingsModal() : null" class="hidden sm:flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-black/5 transition-colors cursor-pointer" title="Click to view or change Backend API URL">
           <div id="api-live-dot" class="w-2 h-2 rounded-full ${window.EventosAPI && window.EventosAPI.isLive ? 'bg-emerald-500 animate-pulse' : 'bg-gray-300'}"></div>
-          <span id="api-live-label" class="text-[10px] font-label uppercase font-bold text-[#827473] hidden sm:inline">${window.EventosAPI && window.EventosAPI.isLive ? 'Live' : 'API'}</span>
+          <span id="api-live-label" class="text-[10px] font-label uppercase font-bold text-[#827473]">${window.EventosAPI && window.EventosAPI.isLive ? 'Live' : 'API'}</span>
         </button>
-        <button onclick="window.app.logout()" class="text-xs font-label uppercase font-bold text-[#9F3E41] hover:text-[#450D0D] flex items-center gap-1 border border-[#EADFD0] px-3 py-1.5 rounded-lg bg-white shadow-2xs" title="Sign out / Switch account">
+        <button onclick="window.app.logout()" class="hidden md:flex text-xs font-label uppercase font-bold text-[#9F3E41] hover:text-[#450D0D] items-center gap-1 border border-[#EADFD0] px-3 py-1.5 rounded-lg bg-white shadow-2xs" title="Sign out / Switch account">
           <span>Sign Out</span>
           <span class="material-symbols-outlined text-sm">logout</span>
+        </button>
+        <!-- Mobile Hamburger Button -->
+        <button onclick="window.app.toggleMobileMenu()" class="md:hidden p-2 rounded-lg bg-white border border-[#EADFD0] text-[#450D0D] hover:bg-[#FFFBF5] flex items-center justify-center shadow-2xs" aria-label="Toggle navigation menu">
+          <span class="material-symbols-outlined text-xl">menu</span>
         </button>
       `;
     }
@@ -778,20 +782,21 @@ window.EventosApp = class EventosApp {
     const activeId = this.getActiveEventId();
 
     if (navLinks) {
+      navLinks.className = 'hidden md:flex items-center gap-5 font-label text-xs uppercase font-bold text-[#450D0D]';
       let pageButtons = '';
       if (role === 'organizer') {
         pageButtons = `
-          <button onclick="window.app.navigate('organizer-overview')" class="hover:text-[#9F3E41] ${route === 'organizer-overview' ? 'text-[#9F3E41] font-extrabold' : ''}">Dashboard</button>
-          <button onclick="window.app.navigate('organizer-flow-balancer')" class="hover:text-[#9F3E41] ${route === 'organizer-flow-balancer' ? 'text-[#9F3E41] font-extrabold' : 'text-[#9F3E41] font-bold'}">Fix Crowd</button>
-          <button onclick="window.app.navigate('organizer-live-map')" class="hover:text-[#9F3E41] ${route === 'organizer-live-map' ? 'text-[#9F3E41] font-extrabold' : ''}">Crowd Map</button>
-          <button onclick="window.app.navigate('organizer-simulation')" class="hover:text-[#9F3E41] ${route === 'organizer-simulation' ? 'text-[#9F3E41] font-extrabold' : ''}">Simulator</button>
+          <button onclick="window.app.navigate('organizer-overview')" class="hover:text-[#9F3E41] transition-colors ${route === 'organizer-overview' ? 'text-[#9F3E41] font-extrabold' : ''}">Dashboard</button>
+          <button onclick="window.app.navigate('organizer-flow-balancer')" class="hover:text-[#9F3E41] transition-colors ${route === 'organizer-flow-balancer' ? 'text-[#9F3E41] font-extrabold' : 'text-[#9F3E41] font-bold'}">Fix Crowd</button>
+          <button onclick="window.app.navigate('organizer-live-map')" class="hover:text-[#9F3E41] transition-colors ${route === 'organizer-live-map' ? 'text-[#9F3E41] font-extrabold' : ''}">Crowd Map</button>
+          <button onclick="window.app.navigate('organizer-simulation')" class="hover:text-[#9F3E41] transition-colors ${route === 'organizer-simulation' ? 'text-[#9F3E41] font-extrabold' : ''}">Simulator</button>
         `;
       } else {
         pageButtons = `
-          <button onclick="window.app.navigate('visitor-find')" class="hover:text-[#9F3E41] ${route === 'visitor-find' ? 'text-[#9F3E41] font-extrabold' : ''}">Explore Events</button>
-          <button onclick="window.app.navigate('visitor-plan-journey')" class="hover:text-[#9F3E41] ${route === 'visitor-plan-journey' ? 'text-[#9F3E41] font-extrabold' : ''}">Plan Journey</button>
-          <button onclick="window.app.navigate('visitor-my-journey')" class="hover:text-[#9F3E41] ${route === 'visitor-my-journey' ? 'text-[#9F3E41] font-extrabold' : ''}">My Ticket &amp; Schedule</button>
-          <button onclick="window.app.navigate('visitor-live')" class="hover:text-[#9F3E41] ${route === 'visitor-live' ? 'text-[#9F3E41] font-extrabold' : ''}">Venue Map</button>
+          <button onclick="window.app.navigate('visitor-find')" class="hover:text-[#9F3E41] transition-colors ${route === 'visitor-find' ? 'text-[#9F3E41] font-extrabold' : ''}">Explore Events</button>
+          <button onclick="window.app.navigate('visitor-plan-journey')" class="hover:text-[#9F3E41] transition-colors ${route === 'visitor-plan-journey' ? 'text-[#9F3E41] font-extrabold' : ''}">Plan Journey</button>
+          <button onclick="window.app.navigate('visitor-my-journey')" class="hover:text-[#9F3E41] transition-colors ${route === 'visitor-my-journey' ? 'text-[#9F3E41] font-extrabold' : ''}">My Passes</button>
+          <button onclick="window.app.navigate('visitor-live')" class="hover:text-[#9F3E41] transition-colors ${route === 'visitor-live' ? 'text-[#9F3E41] font-extrabold' : ''}">Venue Map</button>
         `;
       }
 
@@ -821,12 +826,134 @@ window.EventosApp = class EventosApp {
               title="Add / Register another event"
               class="px-2.5 py-1 rounded-lg bg-[#FFFBF5] hover:bg-[#9F3E41] hover:text-white border border-[#EADFD0] text-[#9F3E41] text-xs font-label font-bold uppercase transition-colors flex items-center gap-0.5">
               <span class="material-symbols-outlined text-sm">add</span>
-              <span class="hidden md:inline">Add Event</span>
+              <span class="hidden lg:inline">Add Event</span>
             </button>
           </div>
         </div>
       `;
     }
+
+    this.renderMobileDrawer();
+  }
+
+  toggleMobileMenu() {
+    const drawer = document.getElementById('mobile-nav-drawer');
+    if (!drawer) return;
+    const isHidden = drawer.classList.contains('hidden');
+    if (isHidden) {
+      this.renderMobileDrawer();
+      drawer.classList.remove('hidden');
+    } else {
+      drawer.classList.add('hidden');
+    }
+  }
+
+  closeMobileMenu() {
+    const drawer = document.getElementById('mobile-nav-drawer');
+    if (drawer) drawer.classList.add('hidden');
+  }
+
+  renderMobileDrawer() {
+    const drawer = document.getElementById('mobile-nav-drawer');
+    if (!drawer) return;
+    const route = this.state.currentRoute || 'auth';
+    const isAuthRoute = (route === 'auth' || route === 'login' || route === 'register');
+    if (isAuthRoute) {
+      drawer.classList.add('hidden');
+      drawer.innerHTML = '';
+      return;
+    }
+
+    const role = this.getState('role') || 'visitor';
+    const events = this.state.userEvents || [];
+    const activeId = this.getActiveEventId();
+
+    const eventOptions = events.map(e => `
+      <option value="${e.id}" ${e.id === activeId ? 'selected' : ''}>
+        ${e.title || e.id}
+      </option>
+    `).join('');
+
+    let links = '';
+    if (role === 'organizer') {
+      links = `
+        <button onclick="window.app.navigate('organizer-overview'); window.app.closeMobileMenu();" class="w-full text-left py-2.5 px-3 rounded-xl flex items-center gap-2.5 font-label font-bold text-xs uppercase ${route === 'organizer-overview' ? 'bg-[#450D0D] text-white shadow-sm' : 'text-[#450D0D] bg-white border border-[#EADFD0]'}">
+          <span class="material-symbols-outlined text-base">dashboard</span>
+          <span>Operations Dashboard</span>
+        </button>
+        <button onclick="window.app.navigate('organizer-flow-balancer'); window.app.closeMobileMenu();" class="w-full text-left py-2.5 px-3 rounded-xl flex items-center gap-2.5 font-label font-bold text-xs uppercase ${route === 'organizer-flow-balancer' ? 'bg-[#9F3E41] text-white shadow-sm' : 'text-[#9F3E41] bg-rose-50 border border-rose-200'}">
+          <span class="material-symbols-outlined text-base">alt_route</span>
+          <span>Fix Crowd (Flow Balancer)</span>
+        </button>
+        <button onclick="window.app.navigate('organizer-live-map'); window.app.closeMobileMenu();" class="w-full text-left py-2.5 px-3 rounded-xl flex items-center gap-2.5 font-label font-bold text-xs uppercase ${route === 'organizer-live-map' ? 'bg-[#450D0D] text-white shadow-sm' : 'text-[#450D0D] bg-white border border-[#EADFD0]'}">
+          <span class="material-symbols-outlined text-base">map</span>
+          <span>Live Blueprint Map</span>
+        </button>
+        <button onclick="window.app.navigate('organizer-simulation'); window.app.closeMobileMenu();" class="w-full text-left py-2.5 px-3 rounded-xl flex items-center gap-2.5 font-label font-bold text-xs uppercase ${route === 'organizer-simulation' ? 'bg-[#450D0D] text-white shadow-sm' : 'text-[#450D0D] bg-white border border-[#EADFD0]'}">
+          <span class="material-symbols-outlined text-base">play_circle</span>
+          <span>Crowd Simulator</span>
+        </button>
+      `;
+    } else {
+      links = `
+        <button onclick="window.app.navigate('visitor-find'); window.app.closeMobileMenu();" class="w-full text-left py-2.5 px-3 rounded-xl flex items-center gap-2.5 font-label font-bold text-xs uppercase ${route === 'visitor-find' ? 'bg-[#9F3E41] text-white shadow-sm' : 'text-[#450D0D] bg-white border border-[#EADFD0]'}">
+          <span class="material-symbols-outlined text-base">search</span>
+          <span>Explore Events</span>
+        </button>
+        <button onclick="window.app.navigate('visitor-plan-journey'); window.app.closeMobileMenu();" class="w-full text-left py-2.5 px-3 rounded-xl flex items-center gap-2.5 font-label font-bold text-xs uppercase ${route === 'visitor-plan-journey' ? 'bg-[#9F3E41] text-white shadow-sm' : 'text-[#450D0D] bg-white border border-[#EADFD0]'}">
+          <span class="material-symbols-outlined text-base">route</span>
+          <span>Plan Indoor Journey</span>
+        </button>
+        <button onclick="window.app.navigate('visitor-my-journey'); window.app.closeMobileMenu();" class="w-full text-left py-2.5 px-3 rounded-xl flex items-center gap-2.5 font-label font-bold text-xs uppercase ${route === 'visitor-my-journey' ? 'bg-[#9F3E41] text-white shadow-sm' : 'text-[#450D0D] bg-white border border-[#EADFD0]'}">
+          <span class="material-symbols-outlined text-base">confirmation_number</span>
+          <span>My Passes &amp; Schedule</span>
+        </button>
+        <button onclick="window.app.navigate('visitor-live'); window.app.closeMobileMenu();" class="w-full text-left py-2.5 px-3 rounded-xl flex items-center gap-2.5 font-label font-bold text-xs uppercase ${route === 'visitor-live' ? 'bg-[#9F3E41] text-white shadow-sm' : 'text-[#450D0D] bg-white border border-[#EADFD0]'}">
+          <span class="material-symbols-outlined text-base">navigation</span>
+          <span>Live Venue Map</span>
+        </button>
+      `;
+    }
+
+    drawer.innerHTML = `
+      <div class="space-y-3">
+        <!-- Event Switcher -->
+        <div class="p-3 rounded-xl bg-white border border-[#EADFD0] shadow-2xs">
+          <label class="block text-[10px] font-label uppercase font-bold text-[#827473] mb-1.5 flex items-center justify-between">
+            <span>Current Active Event</span>
+            <span class="text-[#9F3E41] font-bold">${role === 'organizer' ? 'ORGANIZER' : 'VISITOR'}</span>
+          </label>
+          <div class="flex items-center gap-2">
+            <select onchange="window.app.switchEvent(this.value); window.app.closeMobileMenu();"
+              class="flex-1 bg-[#FFFBF5] border border-[#EADFD0] rounded-lg px-3 py-2 text-xs font-label font-bold text-[#450D0D] focus:outline-none">
+              ${eventOptions || `<option value="aarpo-26">AARPO World Summit 2026</option>`}
+            </select>
+            <button onclick="window.app.openAddEventModal(); window.app.closeMobileMenu();"
+              class="px-3 py-2 rounded-lg bg-[#9F3E41] text-white text-xs font-label font-bold uppercase flex items-center gap-1 shrink-0 shadow-sm" title="Add Event">
+              <span class="material-symbols-outlined text-sm">add</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="space-y-1.5">
+          ${links}
+        </div>
+
+        <!-- Sign Out & Settings -->
+        <div class="pt-3 border-t border-[#EADFD0] flex items-center justify-between">
+          <button onclick="window.app.showApiSettingsModal(); window.app.closeMobileMenu();" class="text-xs font-label font-bold text-[#827473] hover:text-[#450D0D] flex items-center gap-1.5 py-1">
+            <span class="material-symbols-outlined text-base">settings</span>
+            <span>API Settings</span>
+          </button>
+          <button onclick="window.app.logout(); window.app.closeMobileMenu();" class="px-4 py-2 rounded-xl border border-rose-200 text-rose-700 bg-rose-50 text-xs font-label font-bold uppercase flex items-center gap-1.5 shadow-2xs">
+            <span>Sign Out</span>
+            <span class="material-symbols-outlined text-base">logout</span>
+          </button>
+        </div>
+      </div>
+    `;
+  }
   }
 
   logout() {
