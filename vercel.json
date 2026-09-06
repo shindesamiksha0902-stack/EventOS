@@ -1,37 +1,37 @@
-﻿{
-  version: 2,
-  name: eventos-platform,
-  cleanUrls: true,
-  trailingSlash: false,
-  routes: [
+{
+  "version": 2,
+  "name": "eventos-platform",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
     {
-      src: /css/(.*),
-      dest: /css/
+      "src": "/css/(.*)",
+      "dest": "/css/$1"
     },
     {
-      src: /js/(.*),
-      dest: /js/
+      "src": "/js/(.*)",
+      "dest": "/js/$1"
     },
     {
-      src: /(.*),
-      dest: /index.html
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ],
-  headers: [
+  "headers": [
     {
-      source: /(.*),
-      headers: [
+      "source": "/(.*)",
+      "headers": [
         {
-          key: X-Content-Type-Options,
-          value: nosniff
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         },
         {
-          key: X-Frame-Options,
-          value: DENY
+          "key": "X-Frame-Options",
+          "value": "DENY"
         },
         {
-          key: Access-Control-Allow-Origin,
-          value: *
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
         }
       ]
     }
