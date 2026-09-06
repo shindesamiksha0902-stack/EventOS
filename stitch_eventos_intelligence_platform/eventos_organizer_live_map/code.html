@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EVENTOS — Live Map Console</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wght@300;400;500;600;700&amp;family=Archivo+Narrow:ital,wght@0,500;0,600;0,700;1,600&amp;family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-container": "#e7e2d8",
+            "surface-dim": "#e8d6d5",
+            "surface": "#fff8f7",
+            "outline-variant": "#dcc0bf",
+            "tertiary-fixed-dim": "#ffb3ae",
+            "primary-container": "#f98383",
+            "primary-fixed": "#ffdad8",
+            "on-tertiary-container": "#672624",
+            "outline": "#897271",
+            "surface-variant": "#f0dedd",
+            "on-primary-fixed": "#410007",
+            "inverse-primary": "#ffb3b1",
+            "error": "#ba1a1a",
+            "on-tertiary": "#ffffff",
+            "on-secondary-container": "#67645c",
+            "surface-container": "#fceae8",
+            "error-container": "#ffdad6",
+            "on-background": "#231919",
+            "on-secondary-fixed": "#1d1b16",
+            "primary": "#9f3e41",
+            "surface-tint": "#9f3e41",
+            "on-tertiary-fixed": "#3c0708",
+            "on-primary": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-primary-container": "#711b21",
+            "secondary": "#615e57",
+            "surface-container-lowest": "#ffffff",
+            "tertiary": "#934844",
+            "on-primary-fixed-variant": "#80272b",
+            "secondary-fixed-dim": "#cbc6bd",
+            "on-surface": "#231919",
+            "tertiary-container": "#e88d87",
+            "tertiary-fixed": "#ffdad7",
+            "surface-container-highest": "#f0dedd",
+            "on-secondary-fixed-variant": "#494740",
+            "surface-container-high": "#f6e4e3",
+            "on-surface-variant": "#564241",
+            "secondary-fixed": "#e7e2d8",
+            "inverse-surface": "#382e2d",
+            "on-tertiary-fixed-variant": "#75312e",
+            "on-error-container": "#93000a",
+            "surface-bright": "#fff8f7",
+            "surface-container-low": "#fff0ef",
+            "background": "#fff8f7",
+            "inverse-on-surface": "#ffedeb",
+            "primary-fixed-dim": "#ffb3b1",
+            "on-error": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "space-xs": "0.5rem",
+            "gutter-mobile": "1rem",
+            "space-2xl": "3rem",
+            "space-2xs": "0.25rem",
+            "space-md": "1rem",
+            "gutter-desktop": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-3xl": "4.5rem",
+            "space-3xs": "0.125rem",
+            "space-sm": "0.75rem",
+            "margin-desktop": "2.5rem"
+          },
+          "fontFamily": {
+            "label-md": ["Archivo Narrow"],
+            "body-lg": ["Anybody"],
+            "headline-lg-mobile": ["Noto Serif"],
+            "headline-sm": ["Noto Serif"],
+            "display-lg-mobile": ["Noto Serif"],
+            "label-lg": ["Archivo Narrow"],
+            "headline-md": ["Noto Serif"],
+            "body-sm": ["Anybody"],
+            "body-md": ["Anybody"],
+            "display-lg": ["Noto Serif"],
+            "label-sm": ["Archivo Narrow"],
+            "headline-lg": ["Noto Serif"]
+          },
+          "fontSize": {
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0.005em", "fontWeight": "600" }],
+            "display-lg-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "body-sm": ["13px", { "lineHeight": "20px", "letterSpacing": "0.015em", "fontWeight": "400" }],
+            "body-md": ["15px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "500" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    @keyframes gentle-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.08); opacity: 0.85; }
+    }
+    .pulse-urgent {
+      animation: gentle-pulse 2.2s infinite ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TOP APP BAR -->
+<header class="flex justify-between items-center w-full px-space-md lg:px-margin-desktop py-space-xs border-b border-outline-variant bg-surface sticky top-0 z-40">
+<div class="flex items-center gap-space-xl">
+<!-- Brand Logo -->
+<div class="flex items-center gap-space-xs">
+<span class="text-headline-md font-headline-md font-medium tracking-tight text-on-surface">EVENTOS</span>
+<span class="bg-surface-container-high px-space-xs py-space-3xs rounded text-label-sm font-label-sm text-secondary tracking-widest uppercase">Console</span>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden md:flex items-center gap-space-lg">
+<a class="text-secondary hover:text-on-surface font-label-md text-label-md pb-1 transition-colors" href="#">Overview</a>
+<a class="text-primary border-b-2 border-primary font-label-md text-label-md pb-1 font-bold" href="#">Map</a>
+<a class="text-secondary hover:text-on-surface font-label-md text-label-md pb-1 transition-colors flex items-center gap-space-3xs" href="#">
+          Fix Crowd
+          <span class="w-2 h-2 rounded-full bg-primary-container"></span>
+</a>
+<a class="text-secondary hover:text-on-surface font-label-md text-label-md pb-1 transition-colors" href="#">Settings</a>
+</nav>
+</div>
+<!-- Event Badge & Operations Profile -->
+<div class="flex items-center gap-space-md">
+<div class="hidden sm:flex items-center gap-space-xs bg-surface-container px-space-sm py-space-2xs rounded border border-outline-variant">
+<span class="material-symbols-outlined text-primary text-base" data-icon="flag">flag</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">AARPO World Summit</span>
+</div>
+<div class="flex items-center gap-space-xs pl-space-sm border-l border-outline-variant">
+<button class="p-space-2xs text-secondary hover:text-on-surface transition-colors cursor-pointer rounded hover:bg-surface-container-high" title="Live Sync">
+<span class="material-symbols-outlined text-xl" data-icon="sync">sync</span>
+</button>
+<button class="p-space-2xs text-secondary hover:text-on-surface transition-colors cursor-pointer rounded hover:bg-surface-container-high" title="Notifications">
+<span class="material-symbols-outlined text-xl" data-icon="notifications">notifications</span>
+</button>
+<div class="w-7 h-7 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-label-sm text-label-sm ml-space-2xs font-bold border border-outline-variant" title="Director of Operations Avatar">
+          DO
+        </div>
+</div>
+</div>
+</header>
+<!-- MAIN DUAL PANE WORKSPACE -->
+<main class="flex-1 flex flex-col lg:flex-row p-space-md lg:p-margin-desktop gap-space-lg max-w-[1720px] mx-auto w-full">
+<!-- LEFT / MAIN AREA: The Simple Event Map Canvas -->
+<section class="flex-1 flex flex-col bg-surface-container-lowest rounded-xl border border-outline-variant p-space-md lg:p-space-lg relative overflow-hidden shadow-sm min-h-[620px]">
+<!-- Canvas Header Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pb-space-md border-b border-outline-variant z-10">
+<div>
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider block">Real-time Spatial Map</span>
+<h1 class="font-headline-sm text-headline-sm text-on-surface">Venue Grounds &amp; Egress Nodes</h1>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center gap-space-2xs bg-surface-container px-space-sm py-space-2xs rounded text-label-sm font-label-sm text-secondary border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span>
+            Telemetry Synced (1s ago)
+          </span>
+<button class="px-space-sm py-space-2xs rounded bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md border border-outline-variant transition-colors flex items-center gap-space-3xs">
+<span class="material-symbols-outlined text-base" data-icon="filter_list">filter_list</span>
+            All Zones
+          </button>
+</div>
+</div>
+<!-- MAP STAGE (SVG Schematic Canvas) -->
+<div class="relative flex-1 w-full flex items-center justify-center py-space-md select-none">
+<!-- Venue Grounds Perimeter Background Graphic -->
+<svg class="w-full h-full max-h-[580px]" fill="none" viewbox="0 0 880 540" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<!-- Pattern for grounds texture -->
+<pattern height="20" id="dotGrid" patternunits="userSpaceOnUse" width="20" x="0" y="0">
+<circle cx="2" cy="2" fill="#dcc0bf" opacity="0.45" r="1"></circle>
+</pattern>
+</defs>
+<!-- Outer Grounds Soft Fill -->
+<rect fill="#fff8f7" height="500" rx="36" stroke="#dcc0bf" stroke-dasharray="4 4" stroke-width="1.5" width="840" x="20" y="20"></rect>
+<!-- Inner Perimeter Shape -->
+<rect fill="url(#dotGrid)" height="468" rx="28" width="808" x="36" y="36"></rect>
+<!-- Dotted Pedestrian Corridors / Pathways -->
+<!-- Center to Station A (Right path - surging) -->
+<path d="M 440 270 C 560 270, 620 180, 710 160" stroke="#9f3e41" stroke-dasharray="6 6" stroke-linecap="round" stroke-width="3.5"></path>
+<!-- Center to Station B (Left upper path) -->
+<path d="M 440 270 C 340 270, 260 190, 170 170" stroke="#897271" stroke-dasharray="5 5" stroke-linecap="round" stroke-width="2.5"></path>
+<!-- Center to Station C (Lower path) -->
+<path d="M 440 270 C 440 370, 360 410, 260 420" stroke="#897271" stroke-dasharray="5 5" stroke-linecap="round" stroke-width="2.5"></path>
+<!-- Cross link connecting Station B & C -->
+<path d="M 170 210 C 180 300, 200 360, 240 400" stroke="#dcc0bf" stroke-dasharray="4 4" stroke-width="1.5"></path>
+<!-- Directional Dynamic Arrows along Station A corridor -->
+<circle class="pulse-urgent" cx="580" cy="218" fill="#ba1a1a" r="3.5"></circle>
+<circle class="pulse-urgent" cx="630" cy="188" fill="#ba1a1a" r="3.5"></circle>
+</svg>
+<!-- INTERACTIVE MAP NODES (Absolute HTML over SVG) -->
+<!-- 1. KEYNOTE HALL (Center Anchor) -->
+<div class="absolute top-[48%] left-[50%] -translate-x-1/2 -translate-y-1/2 z-20">
+<div class="bg-surface-container-highest border-2 border-outline px-space-lg py-space-sm rounded-xl text-center shadow-md min-w-[210px]">
+<div class="flex items-center justify-center gap-space-2xs text-secondary mb-space-3xs">
+<span class="material-symbols-outlined text-base" data-icon="apartment">apartment</span>
+<span class="font-label-sm text-label-sm uppercase tracking-widest">Main Arena</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Keynote Hall</h3>
+<div class="mt-space-2xs inline-flex items-center gap-space-3xs px-space-xs py-space-3xs bg-surface-container-high rounded text-label-sm font-label-sm text-secondary border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+              Just Emptied (0% Capacity)
+            </div>
+</div>
+</div>
+<!-- 2. STATION A (Selected Location - Surging / Red Pulsing) -->
+<div class="absolute top-[26%] right-[11%] -translate-y-1/2 z-30 cursor-pointer">
+<div class="relative">
+<!-- Pulsing outer halo -->
+<div class="absolute -inset-2.5 rounded-2xl bg-error/20 pulse-urgent"></div>
+<!-- Station Node Container -->
+<div class="relative bg-surface-container-lowest border-2 border-error p-space-sm rounded-xl shadow-lg ring-4 ring-primary-container/40">
+<div class="flex items-center gap-space-xs">
+<!-- Large Visual Status Dot -->
+<span class="relative flex h-3.5 w-3.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-error opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-error"></span>
+</span>
+<div>
+<div class="flex items-center gap-space-2xs">
+<span class="font-headline-sm text-headline-sm text-on-surface leading-none">Station A</span>
+<span class="bg-error-container text-on-error-container font-label-sm text-label-sm px-space-2xs py-space-3xs rounded font-bold uppercase">Surging!</span>
+</div>
+<p class="font-body-sm text-body-sm text-error font-medium mt-space-3xs">72% Occupied • Funneling</p>
+</div>
+</div>
+<!-- Selection indicator pin -->
+<div class="mt-space-xs pt-space-2xs border-t border-error/20 flex items-center justify-between font-label-sm text-label-sm text-error">
+<span class="flex items-center gap-space-3xs font-semibold">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span> Active Target
+                </span>
+<span class="font-bold">Egress Gate 1</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. STATION B (Left - Normal / Green) -->
+<div class="absolute top-[28%] left-[13%] -translate-y-1/2 z-20 cursor-pointer hover:scale-102 transition-transform">
+<div class="bg-surface-container-lowest border border-outline-variant p-space-sm rounded-xl shadow-sm hover:border-outline">
+<div class="flex items-center gap-space-xs">
+<!-- Visual Status Dot -->
+<span class="h-3 w-3 rounded-full bg-emerald-600 inline-block"></span>
+<div>
+<div class="flex items-center gap-space-2xs">
+<span class="font-headline-sm text-headline-sm text-on-surface leading-none">Station B</span>
+<span class="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-space-2xs py-space-3xs rounded">Normal</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-space-3xs">48% • Rapid Metro</p>
+</div>
+</div>
+</div>
+</div>
+<!-- 4. STATION C (Bottom Left - Normal / Green) -->
+<div class="absolute bottom-[20%] left-[24%] -translate-y-1/2 z-20 cursor-pointer hover:scale-102 transition-transform">
+<div class="bg-surface-container-lowest border border-outline-variant p-space-sm rounded-xl shadow-sm hover:border-outline">
+<div class="flex items-center gap-space-xs">
+<!-- Visual Status Dot -->
+<span class="h-3 w-3 rounded-full bg-emerald-600 inline-block"></span>
+<div>
+<div class="flex items-center gap-space-2xs">
+<span class="font-headline-sm text-headline-sm text-on-surface leading-none">Station C</span>
+<span class="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-space-2xs py-space-3xs rounded">Normal</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-space-3xs">41% • Shuttle Bus Loop</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- MAP LEGEND (Bottom Left Anchor) -->
+<div class="mt-auto pt-space-sm flex flex-wrap items-center justify-between gap-space-md border-t border-outline-variant z-10 bg-surface-container-lowest">
+<div class="flex items-center gap-space-lg bg-surface-container-low px-space-md py-space-xs rounded-lg border border-outline-variant">
+<span class="font-label-sm text-label-sm text-secondary uppercase font-bold tracking-wider mr-space-2xs">Status Key:</span>
+<div class="flex items-center gap-space-2xs">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span>
+<span class="font-label-md text-label-md text-on-surface">Normal</span>
+</div>
+<div class="flex items-center gap-space-2xs">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+<span class="font-label-md text-label-md text-on-surface">Getting Busy</span>
+</div>
+<div class="flex items-center gap-space-2xs">
+<span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+<span class="font-label-md text-label-md text-on-surface font-bold">Crowded</span>
+</div>
+</div>
+<div class="text-secondary font-label-sm text-label-sm flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-sm" data-icon="mouse">mouse</span>
+          Click any location marker to inspect telemetry
+        </div>
+</div>
+</section>
+<!-- RIGHT AREA: Location Detail Card (Station A Selected) -->
+<aside class="w-full lg:w-[420px] flex flex-col gap-space-md">
+<!-- Primary Location Inspector Card -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-lg shadow-sm flex flex-col">
+<!-- Card Header -->
+<div class="flex items-center justify-between border-b border-outline-variant pb-space-sm mb-space-md">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest font-semibold">Selected Location</span>
+<span class="inline-flex items-center gap-space-3xs px-space-sm py-space-3xs rounded-full bg-error-container text-on-error-container font-label-md text-label-md font-bold">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+            Crowded soon
+          </span>
+</div>
+<!-- Title & Sub-heading -->
+<div class="mb-space-md">
+<h2 class="font-headline-lg text-headline-lg text-on-surface leading-tight">Station A</h2>
+<p class="font-body-sm text-body-sm text-secondary mt-space-3xs">Main East Exit &amp; Tram Terminal</p>
+</div>
+<!-- Key Information in Big Readable Typography -->
+<div class="bg-surface-container-low rounded-lg p-space-md border border-outline-variant mb-space-md space-y-space-sm">
+<div>
+<div class="font-display-lg text-headline-lg font-bold text-on-surface leading-none tracking-tight">
+              72%
+            </div>
+<p class="font-label-md text-label-md text-secondary font-medium uppercase mt-space-3xs tracking-wider">
+              Occupied right now
+            </p>
+</div>
+<div class="pt-space-sm border-t border-outline-variant grid grid-cols-2 gap-space-sm">
+<div>
+<span class="font-label-sm text-label-sm text-error font-bold uppercase tracking-wider block">Projection</span>
+<span class="font-headline-sm text-headline-sm font-bold text-error">94%</span>
+<span class="font-body-sm text-body-sm text-secondary block">in 14 min</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider block">Safe Ceiling</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Limit: 88%</span>
+<span class="font-body-sm text-body-sm text-secondary block">Buffer: 450 ppl</span>
+</div>
+</div>
+</div>
+<!-- Short Human Explanation -->
+<div class="mb-space-lg p-space-sm bg-surface-container rounded border-l-4 border-primary">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-xl flex-shrink-0 mt-0.5" data-icon="info">info</span>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+              Keynote egress is funneling <strong class="text-on-surface font-semibold">6,200 attendees</strong> toward this entrance gate.
+            </p>
+</div>
+</div>
+<!-- Big Prominent Primary Action Button -->
+<button class="w-full py-space-sm px-space-md bg-primary-container hover:bg-tertiary-container active:scale-[0.98] text-on-primary-container font-headline-sm text-headline-sm rounded-lg font-bold shadow-sm transition-all duration-150 flex items-center justify-center gap-space-xs cursor-pointer border border-primary/20">
+<span class="material-symbols-outlined text-2xl" data-icon="alt_route">alt_route</span>
+          Fix Crowd
+        </button>
+<p class="text-center font-label-sm text-label-sm text-secondary mt-space-2xs">
+          Triggers dynamic digital wayfinding to alternate exits
+        </p>
+</div>
+<!-- Alternative Nearby Stations Recommendation List -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-space-md shadow-sm">
+<h3 class="font-label-sm text-label-sm text-secondary uppercase font-bold tracking-wider mb-space-sm">
+          Alternative Nearby Stations
+        </h3>
+<div class="space-y-space-sm">
+<!-- Station B Suggestion Row -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface hover:bg-surface-container transition-colors border border-outline-variant cursor-pointer group">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-base" data-icon="train">train</span>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold group-hover:text-primary transition-colors">
+                  Station B (Rapid Metro)
+                </h4>
+<p class="font-body-sm text-body-sm text-secondary">
+<span class="font-semibold text-emerald-700">48% full</span> — lots of space
+                </p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary group-hover:text-on-surface transition-colors" data-icon="arrow_forward">arrow_forward</span>
+</div>
+<!-- Station C Suggestion Row -->
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface hover:bg-surface-container transition-colors border border-outline-variant cursor-pointer group">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-base" data-icon="directions_bus">directions_bus</span>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface font-semibold group-hover:text-primary transition-colors">
+                  Station C (Shuttle Bus)
+                </h4>
+<p class="font-body-sm text-body-sm text-secondary">
+<span class="font-semibold text-emerald-700">41% full</span> — lots of space
+                </p>
+</div>
+</div>
+<span class="material-symbols-outlined text-secondary group-hover:text-on-surface transition-colors" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- Clean Bottom Status Strip -->
+<footer class="border-t border-outline-variant px-space-md lg:px-margin-desktop py-space-xs text-secondary font-label-sm text-label-sm flex flex-wrap justify-between items-center bg-surface">
+<div class="flex items-center gap-space-md">
+<span>EVENTOS Command Node • Production v4.8</span>
+<span class="hidden sm:inline">•</span>
+<span class="hidden sm:inline">Incident Response Mode: Standby</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+<span>Autonomous Dispatch Ready</span>
+</div>
+</footer>
+</body></html>

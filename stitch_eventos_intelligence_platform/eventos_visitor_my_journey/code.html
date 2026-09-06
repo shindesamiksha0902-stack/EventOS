@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Journey - EVENTOS Companion</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Typography (Noto Serif, Archivo Narrow, Anybody) -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wght@300;400;500;600;700&amp;family=Archivo+Narrow:ital,wght@0,500;0,600;0,700;1,600&amp;family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-container": "#e7e2d8",
+            "on-background": "#231919",
+            "on-primary-fixed": "#410007",
+            "outline": "#897271",
+            "on-error-container": "#93000a",
+            "surface-variant": "#f0dedd",
+            "surface-container-highest": "#f0dedd",
+            "surface-container": "#fceae8",
+            "surface-container-high": "#f6e4e3",
+            "surface-tint": "#9f3e41",
+            "on-secondary": "#ffffff",
+            "primary": "#9f3e41",
+            "primary-container": "#f98383",
+            "outline-variant": "#dcc0bf",
+            "on-primary-fixed-variant": "#80272b",
+            "on-primary": "#ffffff",
+            "inverse-surface": "#382e2d",
+            "on-secondary-fixed-variant": "#494740",
+            "inverse-primary": "#ffb3b1",
+            "secondary": "#615e57",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "secondary-fixed": "#e7e2d8",
+            "on-primary-container": "#711b21",
+            "on-surface-variant": "#564241",
+            "primary-fixed-dim": "#ffb3b1",
+            "on-surface": "#231919",
+            "secondary-fixed-dim": "#cbc6bd",
+            "tertiary-fixed-dim": "#ffb3ae",
+            "on-tertiary-fixed-variant": "#75312e",
+            "surface-dim": "#e8d6d5",
+            "background": "#fcf6ec",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "on-secondary-container": "#67645c",
+            "on-secondary-fixed": "#1d1b16",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-container": "#e88d87",
+            "primary-fixed": "#ffdad8",
+            "inverse-on-surface": "#ffedeb",
+            "tertiary": "#934844",
+            "on-tertiary-fixed": "#3c0708",
+            "surface": "#fcf6ec",
+            "surface-bright": "#fff8f7",
+            "surface-container-low": "#fff0ef",
+            "on-tertiary-container": "#672624",
+            "tertiary-fixed": "#ffdad7"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter-desktop": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-3xl": "4.5rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "space-xs": "0.5rem",
+            "space-2xs": "0.25rem",
+            "margin-desktop": "2.5rem",
+            "gutter-mobile": "1rem",
+            "space-3xs": "0.125rem",
+            "space-2xl": "3rem",
+            "space-sm": "0.75rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "label-lg": ["Archivo Narrow"],
+            "headline-sm": ["Noto Serif"],
+            "body-md": ["Anybody"],
+            "display-lg": ["Noto Serif"],
+            "body-sm": ["Anybody"],
+            "headline-lg": ["Noto Serif"],
+            "label-md": ["Archivo Narrow"],
+            "headline-md": ["Noto Serif"],
+            "headline-lg-mobile": ["Noto Serif"],
+            "body-lg": ["Anybody"],
+            "label-sm": ["Archivo Narrow"],
+            "display-lg-mobile": ["Noto Serif"]
+          },
+          "fontSize": {
+            "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0.005em", "fontWeight": "600" }],
+            "body-md": ["15px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "body-sm": ["13px", { "lineHeight": "20px", "letterSpacing": "0.015em", "fontWeight": "400" }],
+            "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "display-lg-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    /* Ambient oxblood tint soft shadow from Style Guidance */
+    .shadow-editorial {
+      box-shadow: 0px 8px 24px -4px rgba(69, 13, 13, 0.07), 0px 2px 6px -1px rgba(69, 13, 13, 0.03);
+    }
+    .shadow-ambient-active {
+      box-shadow: 0px 12px 30px -4px rgba(249, 131, 131, 0.22), 0px 4px 10px -2px rgba(69, 13, 13, 0.06);
+    }
+    /* Hairline borders specified in visual tokens */
+    .border-hairline {
+      border: 1px solid rgba(130, 116, 115, 0.18);
+    }
+    .border-hairline-subtle {
+      border: 1px solid rgba(130, 116, 115, 0.12);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased min-h-screen flex justify-center selection:bg-primary-container selection:text-on-primary-container">
+<!-- Mobile Screen Container (390px class base layout) -->
+<div class="w-full max-w-[420px] bg-background min-h-screen flex flex-col relative pb-28">
+<!-- Top App Bar (Anchored from Shared Components JSON) -->
+<header class="sticky top-0 z-40 bg-background/95 backdrop-blur-sm transition-colors duration-150">
+<div class="flex justify-between items-center w-full px-margin-mobile py-space-sm">
+<button aria-label="Go back" class="p-1 -ml-1 text-primary hover:bg-surface-container rounded transition-transform active:scale-95 duration-150" type="button">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<span class="font-headline-md text-headline-sm text-primary tracking-tight font-bold">EVENTOS</span>
+<button aria-label="Account profile" class="p-1 -mr-1 text-primary hover:bg-surface-container rounded transition-transform active:scale-95 duration-150" type="button">
+<span class="material-symbols-outlined text-[26px]">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-margin-mobile pt-space-xs space-y-space-lg">
+<!-- Editorial Header Section -->
+<section class="space-y-space-2xs">
+<div class="inline-flex items-center gap-1.5 text-primary">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm tracking-wider uppercase text-primary">Live Companion</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background font-semibold tracking-tight">
+          My Journeys
+        </h1>
+<p class="font-body-md text-body-md text-secondary font-normal leading-relaxed">
+          Your active trips, upcoming events, and travel history.
+        </p>
+</section>
+<!-- 1. Current Active Journey (Highlighted Card) -->
+<section aria-labelledby="active-journey-heading" class="relative">
+<div class="bg-surface-container-lowest border-hairline rounded-full p-space-md shadow-ambient-active relative overflow-hidden">
+<!-- Editorial Decorative Ambient Header -->
+<div class="flex items-center justify-between gap-2 mb-space-sm border-b border-hairline-subtle pb-space-xs">
+<div class="inline-flex items-center gap-1.5 bg-primary-container/20 text-on-primary-container px-2.5 py-0.5 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="font-label-sm text-label-sm font-bold tracking-wider">IN PROGRESS</span>
+</div>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[16px]">navigation</span>
+<span class="font-label-sm text-label-sm text-secondary">GPS Live</span>
+</div>
+</div>
+<!-- Main Event Title & Route Details -->
+<div class="space-y-space-xs">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-tight" id="active-journey-heading">
+              AARPO World Summit 2026
+            </h2>
+<div class="flex items-start gap-2 text-on-surface-variant pt-1">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5" style="font-variation-settings: 'FILL' 1;">alt_route</span>
+<div>
+<p class="font-body-md text-body-md text-on-surface font-medium leading-snug">
+                  Heading to Station B
+                </p>
+<p class="font-label-md text-label-md text-secondary">
+                  Optimized Route • Direct concourse link
+                </p>
+</div>
+</div>
+<!-- Route Progress & ETA Pill Metric -->
+<div class="bg-background border-hairline-subtle rounded-lg p-space-xs flex items-center justify-between mt-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">timelapse</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">ETA: 18 mins</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-[#34A853]"></span>
+<span class="font-label-md text-label-md text-secondary font-medium">On Track</span>
+</div>
+</div>
+<!-- Primary Action Pill Button -->
+<div class="pt-space-xs">
+<button class="w-full bg-primary-container text-on-primary-container hover:bg-[#F76B6B] active:scale-[0.98] transition-all duration-150 py-space-sm px-space-md rounded-full flex items-center justify-center gap-2 font-label-lg text-label-lg shadow-sm" type="button">
+<span class="material-symbols-outlined text-[19px]" style="font-variation-settings: 'FILL' 1;">near_me</span>
+<span>Resume Live Journey</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. Upcoming Event Section -->
+<section aria-labelledby="upcoming-event-heading" class="space-y-space-xs">
+<div class="flex items-center justify-between">
+<h2 class="font-label-lg text-label-lg text-secondary uppercase tracking-wider" id="upcoming-event-heading">
+            Next Scheduled Event
+          </h2>
+<span class="font-label-sm text-label-sm text-primary font-semibold cursor-pointer">View Pass</span>
+</div>
+<div class="bg-surface-container-lowest border-hairline rounded-full p-space-md shadow-editorial space-y-space-sm">
+<div class="flex items-start justify-between gap-3">
+<div class="space-y-1">
+<div class="inline-flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+<span class="font-label-md text-label-md font-semibold tracking-normal">Nov 12, 2026 • 10:00 AM</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-medium leading-snug">
+                Global Tech &amp; Design Expo
+              </h3>
+</div>
+<div class="w-12 h-12 rounded-lg bg-surface-container flex-shrink-0 flex flex-col items-center justify-center text-primary border border-primary/10">
+<span class="font-label-sm text-label-sm font-bold leading-none">NOV</span>
+<span class="font-headline-sm text-headline-sm font-bold leading-tight">12</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5 text-secondary">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="font-body-sm text-body-sm text-secondary font-medium">Bengaluru Tech Pavilion</span>
+</div>
+<div class="pt-space-2xs border-t border-hairline-subtle flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline">Transit access gate 3B</span>
+<button class="bg-transparent border border-outline/30 hover:bg-primary-container/10 active:scale-95 transition-all text-on-surface py-1.5 px-3.5 rounded-full font-label-md text-label-md flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary">route</span>
+<span>Plan Route Early</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 3. Saved Events Section -->
+<section aria-labelledby="saved-events-heading" class="space-y-space-xs">
+<div class="flex items-center justify-between">
+<h2 class="font-label-lg text-label-lg text-secondary uppercase tracking-wider" id="saved-events-heading">
+            Saved &amp; Bookmarked
+          </h2>
+<span class="font-label-sm text-label-sm text-secondary font-normal">2 Saved</span>
+</div>
+<div class="space-y-space-xs">
+<!-- Bookmarked Event Item 1 -->
+<article class="bg-surface-container-lowest border-hairline rounded-xl p-space-sm flex items-center justify-between gap-3 hover:border-outline/40 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">architecture</span>
+</div>
+<div class="space-y-0.5">
+<h3 class="font-body-md text-body-md text-on-surface font-semibold leading-tight">
+                  Sustainable Pavilion Forum
+                </h3>
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-secondary">Dec 04, 2026</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Hall 6A</span>
+</div>
+</div>
+</div>
+<button aria-label="Bookmark item" class="p-1.5 text-primary hover:bg-surface-container rounded-full active:scale-90 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</button>
+</article>
+<!-- Bookmarked Event Item 2 -->
+<article class="bg-surface-container-lowest border-hairline rounded-xl p-space-sm flex items-center justify-between gap-3 hover:border-outline/40 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">palette</span>
+</div>
+<div class="space-y-0.5">
+<h3 class="font-body-md text-body-md text-on-surface font-semibold leading-tight">
+                  Typography &amp; Modernity Gala
+                </h3>
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md text-secondary">Jan 18, 2027</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Grand Atrium</span>
+</div>
+</div>
+</div>
+<button aria-label="Bookmark item" class="p-1.5 text-primary hover:bg-surface-container rounded-full active:scale-90 transition-transform" type="button">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</button>
+</article>
+</div>
+</section>
+<!-- 4. Simple Journey History -->
+<section aria-labelledby="history-heading" class="space-y-space-xs pb-space-sm">
+<h2 class="font-label-lg text-label-lg text-secondary uppercase tracking-wider" id="history-heading">
+          Journey History
+        </h2>
+<div class="bg-surface-container-lowest border-hairline rounded-full divide-y divide-hairline-subtle shadow-editorial overflow-hidden">
+<!-- History Item 1 -->
+<div class="p-space-sm flex items-start justify-between gap-3 hover:bg-surface-container-low/40 transition-colors">
+<div class="flex items-start gap-2.5">
+<div class="p-1 rounded bg-secondary-fixed text-on-secondary-fixed-variant mt-0.5">
+<span class="material-symbols-outlined text-[16px]">check_circle</span>
+</div>
+<div>
+<h3 class="font-body-md text-body-md text-on-surface font-medium leading-snug">
+                  City Marathon Ingress
+                </h3>
+<p class="font-body-sm text-body-sm text-secondary pt-0.5">
+                  Completed Oct 12 • <span class="text-[#34A853] font-medium">Smooth flow</span>
+</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-outline mt-1">chevron_right</span>
+</div>
+<!-- History Item 2 -->
+<div class="p-space-sm flex items-start justify-between gap-3 hover:bg-surface-container-low/40 transition-colors">
+<div class="flex items-start gap-2.5">
+<div class="p-1 rounded bg-secondary-fixed text-on-secondary-fixed-variant mt-0.5">
+<span class="material-symbols-outlined text-[16px]">alt_route</span>
+</div>
+<div>
+<h3 class="font-body-md text-body-md text-on-surface font-medium leading-snug">
+                  Design Forum 2026
+                </h3>
+<p class="font-body-sm text-body-sm text-secondary pt-0.5">
+                  Completed Sep 28 • Diverted via Gate 4 <span class="text-primary font-medium">(saved 12m)</span>
+</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-outline mt-1">chevron_right</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar (Anchored from Shared Components JSON with 'My Journey' active state) -->
+<!-- Prohibits shell border line; uses subtle tonal shift and shadow -->
+<nav aria-label="Bottom Navigation" class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-margin-mobile py-space-xs bg-surface dark:bg-inverse-surface shadow-sm dark:shadow-none">
+<div class="w-full max-w-[420px] mx-auto flex justify-around items-center">
+<!-- Tab 1: Discover (Inactive) -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 active:scale-95 py-1" href="#discover">
+<span class="material-symbols-outlined text-[22px] mb-0.5">explore</span>
+<span>Discover</span>
+</a>
+<!-- Tab 2: My Journey (Active - Exact Semantic Match from JSON) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 active:scale-95 py-1 relative" href="#my-journey">
+<span class="material-symbols-outlined text-[22px] mb-0.5" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+<span class="font-bold">My Journey</span>
+<!-- Active tiny indicator dot -->
+<span class="w-1 h-1 rounded-full bg-primary absolute -bottom-0.5"></span>
+</a>
+<!-- Tab 3: Map (Inactive) -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 active:scale-95 py-1" href="#map">
+<span class="material-symbols-outlined text-[22px] mb-0.5">map</span>
+<span>Map</span>
+</a>
+<!-- Tab 4: Profile (Inactive) -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 active:scale-95 py-1" href="#profile">
+<span class="material-symbols-outlined text-[22px] mb-0.5">person</span>
+<span>Profile</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

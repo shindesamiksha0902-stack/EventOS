@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EVENTOS - Find Event</title>
+<!-- Google Fonts: Noto Serif, Anybody, Archivo Narrow -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wght@0,300..900;1,300..900&amp;family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&amp;family=Noto+Serif:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-container": "#e7e2d8",
+            "on-background": "#231919",
+            "on-primary-fixed": "#410007",
+            "outline": "#897271",
+            "on-error-container": "#93000a",
+            "surface-variant": "#f0dedd",
+            "surface-container-highest": "#f0dedd",
+            "surface-container": "#fceae8",
+            "surface-container-high": "#f6e4e3",
+            "surface-tint": "#9f3e41",
+            "on-secondary": "#ffffff",
+            "primary": "#9f3e41",
+            "primary-container": "#f98383",
+            "outline-variant": "#dcc0bf",
+            "on-primary-fixed-variant": "#80272b",
+            "on-primary": "#ffffff",
+            "inverse-surface": "#382e2d",
+            "on-secondary-fixed-variant": "#494740",
+            "inverse-primary": "#ffb3b1",
+            "secondary": "#615e57",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "secondary-fixed": "#e7e2d8",
+            "on-primary-container": "#711b21",
+            "on-surface-variant": "#564241",
+            "primary-fixed-dim": "#ffb3b1",
+            "on-surface": "#231919",
+            "secondary-fixed-dim": "#cbc6bd",
+            "tertiary-fixed-dim": "#ffb3ae",
+            "on-tertiary-fixed-variant": "#75312e",
+            "surface-dim": "#e8d6d5",
+            "background": "#fff8f7",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "on-secondary-container": "#67645c",
+            "on-secondary-fixed": "#1d1b16",
+            "surface-container-lowest": "#ffffff",
+            "tertiary-container": "#e88d87",
+            "primary-fixed": "#ffdad8",
+            "inverse-on-surface": "#ffedeb",
+            "tertiary": "#934844",
+            "on-tertiary-fixed": "#3c0708",
+            "surface": "#fff8f7",
+            "surface-bright": "#fff8f7",
+            "surface-container-low": "#fff0ef",
+            "on-tertiary-container": "#672624",
+            "tertiary-fixed": "#ffdad7"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter-desktop": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-3xl": "4.5rem",
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "space-xs": "0.5rem",
+            "space-2xs": "0.25rem",
+            "margin-desktop": "2.5rem",
+            "gutter-mobile": "1rem",
+            "space-3xs": "0.125rem",
+            "space-2xl": "3rem",
+            "space-sm": "0.75rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "label-lg": ["Archivo Narrow", "sans-serif"],
+            "headline-sm": ["Noto Serif", "serif"],
+            "body-md": ["Anybody", "sans-serif"],
+            "display-lg": ["Noto Serif", "serif"],
+            "body-sm": ["Anybody", "sans-serif"],
+            "headline-lg": ["Noto Serif", "serif"],
+            "label-md": ["Archivo Narrow", "sans-serif"],
+            "headline-md": ["Noto Serif", "serif"],
+            "headline-lg-mobile": ["Noto Serif", "serif"],
+            "body-lg": ["Anybody", "sans-serif"],
+            "label-sm": ["Archivo Narrow", "sans-serif"],
+            "display-lg-mobile": ["Noto Serif", "serif"]
+          },
+          "fontSize": {
+            "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0.005em", "fontWeight": "600" }],
+            "body-md": ["15px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "body-sm": ["13px", { "lineHeight": "20px", "letterSpacing": "0.015em", "fontWeight": "400" }],
+            "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "500" }],
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "display-lg-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    body {
+      background-color: #FCF6EC;
+      color: #231919;
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Subtle warm ambient elevation conforming to Design System */
+    .shadow-warm-card {
+      box-shadow: 0px 8px 24px -4px rgba(69, 13, 13, 0.06), 0px 2px 6px -1px rgba(69, 13, 13, 0.03);
+    }
+    .shadow-warm-nav {
+      box-shadow: 0px -4px 20px rgba(69, 13, 13, 0.05);
+    }
+    .paper-border {
+      border: 1px solid rgba(130, 116, 115, 0.18);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex justify-center bg-[#FCF6EC] selection:bg-primary-container selection:text-on-primary-container">
+<!-- Mobile Device Shell (~390px) -->
+<div class="w-full max-w-[420px] min-h-screen flex flex-col relative pb-28 bg-[#FCF6EC]">
+<!-- Shared Component: TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant/30 dark:border-outline/20 sticky top-0 z-40">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-space-sm max-w-7xl mx-auto">
+<button aria-label="Back" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container dark:hover:bg-surface-variant transition-colors duration-150 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary" data-icon="arrow_back">arrow_back</span>
+</button>
+<span class="text-headline-md font-headline-md text-primary dark:text-inverse-primary tracking-tight font-bold">EVENTOS</span>
+<button aria-label="Profile Account" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container dark:hover:bg-surface-variant transition-colors duration-150 active:scale-95 transition-transform" type="button">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-margin-mobile pt-5 flex flex-col space-y-6">
+<!-- Header Greeting & Title -->
+<section class="space-y-1">
+<p class="font-body-md text-body-md text-secondary tracking-wide">Hello there</p>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight font-medium">
+          Find your event
+        </h1>
+</section>
+<!-- Search Bar -->
+<section class="relative">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-outline pointer-events-none text-[20px]" data-icon="search">search</span>
+<input class="w-full pl-11 pr-4 py-3 bg-surface-container-lowest text-on-surface font-body-md text-body-md rounded-2xl paper-border placeholder:text-outline/70 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all duration-150" placeholder="Search events, summits, or venues..." type="text"/>
+</div>
+</section>
+<!-- Quick Filter Chips -->
+<section class="flex items-center space-x-2 overflow-x-auto pb-1 no-scrollbar -mx-margin-mobile px-margin-mobile">
+<!-- Active Filter: All -->
+<button class="px-4 py-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-full shadow-sm active:scale-95 transition-transform shrink-0" type="button">
+          All
+        </button>
+<!-- Inactive Filter: This Weekend -->
+<button class="px-4 py-2 bg-[#FCF6EC] text-secondary font-label-md text-label-md rounded-full border border-outline/25 hover:border-outline/50 active:scale-95 transition-all shrink-0" type="button">
+          This Weekend
+        </button>
+<!-- Inactive Filter: Technology -->
+<button class="px-4 py-2 bg-[#FCF6EC] text-secondary font-label-md text-label-md rounded-full border border-outline/25 hover:border-outline/50 active:scale-95 transition-all shrink-0" type="button">
+          Technology
+        </button>
+<!-- Inactive Filter: Culture -->
+<button class="px-4 py-2 bg-[#FCF6EC] text-secondary font-label-md text-label-md rounded-full border border-outline/25 hover:border-outline/50 active:scale-95 transition-all shrink-0" type="button">
+          Culture
+        </button>
+</section>
+<!-- Events List -->
+<section class="space-y-4">
+<!-- 1. Featured Event Card -->
+<article class="bg-surface-container-lowest rounded-2xl paper-border shadow-warm-card overflow-hidden p-5 flex flex-col space-y-3.5 transition-all">
+<div class="flex items-center justify-between">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container text-on-primary-container font-label-sm text-label-sm uppercase tracking-wider">
+              Popular • Expected 60k visitors
+            </span>
+<span class="material-symbols-outlined text-outline/50 text-[18px]" data-icon="bookmark_border">bookmark_border</span>
+</div>
+<div class="space-y-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-tight">
+              AARPO World Summit 2026
+            </h2>
+<div class="flex flex-col space-y-1 pt-0.5 text-secondary">
+<div class="flex items-center space-x-1.5 font-label-lg text-label-lg">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="calendar_today">calendar_today</span>
+<span>Oct 24–27, 2026</span>
+</div>
+<div class="flex items-center space-x-1.5 font-body-sm text-body-sm text-secondary">
+<span class="material-symbols-outlined text-[16px] text-outline" data-icon="location_on">location_on</span>
+<span>Mumbai Convention Center</span>
+</div>
+</div>
+</div>
+<div class="pt-2">
+<button class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-primary-container hover:bg-[#F76B6B] text-on-primary-container font-body-md text-body-md font-semibold rounded-2xl active:scale-[0.98] transition-all duration-150" type="button">
+<span>View Event</span>
+<span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- 2. Second Card: Global Tech & Design Expo -->
+<article class="bg-surface-container-lowest rounded-2xl paper-border shadow-warm-card p-4 flex flex-col space-y-3 transition-all">
+<div class="space-y-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">
+              Global Tech &amp; Design Expo
+            </h2>
+<div class="flex flex-col space-y-1 pt-0.5 text-secondary">
+<div class="flex items-center space-x-1.5 font-label-lg text-label-lg">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="calendar_today">calendar_today</span>
+<span>Nov 12–14, 2026</span>
+</div>
+<div class="flex items-center space-x-1.5 font-body-sm text-body-sm text-secondary">
+<span class="material-symbols-outlined text-[16px] text-outline" data-icon="location_on">location_on</span>
+<span>Bengaluru Tech Pavilion</span>
+</div>
+</div>
+</div>
+<div class="pt-1">
+<button class="w-full flex items-center justify-center py-2.5 px-4 bg-primary-container hover:bg-[#F76B6B] text-on-primary-container font-body-md text-body-md font-medium rounded-2xl active:scale-[0.98] transition-all duration-150" type="button">
+<span>View Event</span>
+</button>
+</div>
+</article>
+<!-- 3. Third Card: International Literature Festival -->
+<article class="bg-surface-container-lowest rounded-2xl paper-border shadow-warm-card p-4 flex flex-col space-y-3 transition-all">
+<div class="space-y-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">
+              International Literature Festival
+            </h2>
+<div class="flex flex-col space-y-1 pt-0.5 text-secondary">
+<div class="flex items-center space-x-1.5 font-label-lg text-label-lg">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="calendar_today">calendar_today</span>
+<span>Dec 02–05, 2026</span>
+</div>
+<div class="flex items-center space-x-1.5 font-body-sm text-body-sm text-secondary">
+<span class="material-symbols-outlined text-[16px] text-outline" data-icon="location_on">location_on</span>
+<span>Heritage Grounds, Delhi</span>
+</div>
+</div>
+</div>
+<div class="pt-1">
+<button class="w-full flex items-center justify-center py-2.5 px-4 bg-primary-container hover:bg-[#F76B6B] text-on-primary-container font-body-md text-body-md font-medium rounded-2xl active:scale-[0.98] transition-all duration-150" type="button">
+<span>View Event</span>
+</button>
+</div>
+</article>
+</section>
+</main>
+<!-- Shared Component: BottomNavBar (Fixed Navigation Dock) -->
+<!-- Active State Rule: Screen is 'FIND EVENT' / discovery companion -> tab 'Discover' is Active -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-margin-mobile py-space-xs bg-surface dark:bg-inverse-surface border-t border-outline-variant/30 dark:border-outline/20 shadow-warm-nav max-w-[420px] left-1/2 -translate-x-1/2">
+<!-- Destination 1: Discover (ACTIVE) -->
+<button class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-label-md text-label-md active:scale-95 transition-transform duration-150 py-1 px-3" type="button">
+<span class="material-symbols-outlined text-[22px]" data-icon="explore" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="mt-0.5 font-semibold">Discover</span>
+</button>
+<!-- Destination 2: My Journey (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 active:scale-95 py-1 px-3" type="button">
+<span class="material-symbols-outlined text-[22px]" data-icon="confirmation_number">confirmation_number</span>
+<span class="mt-0.5">My Journey</span>
+</button>
+<!-- Destination 3: Map (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 active:scale-95 py-1 px-3" type="button">
+<span class="material-symbols-outlined text-[22px]" data-icon="map">map</span>
+<span class="mt-0.5">Map</span>
+</button>
+<!-- Destination 4: Profile (INACTIVE) -->
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary-fixed-dim font-label-md text-label-md hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 active:scale-95 py-1 px-3" type="button">
+<span class="material-symbols-outlined text-[22px]" data-icon="person">person</span>
+<span class="mt-0.5">Profile</span>
+</button>
+</nav>
+</div>
+</body></html>

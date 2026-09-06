@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EVENTOS — Settings</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wght@300;400;500;600;700&amp;family=Archivo+Narrow:ital,wght@0,500;0,600;0,700;1,600&amp;family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "secondary-container": "#e7e2d8",
+            "surface-dim": "#e8d6d5",
+            "surface": "#fff8f7",
+            "outline-variant": "#dcc0bf",
+            "tertiary-fixed-dim": "#ffb3ae",
+            "primary-container": "#f98383",
+            "primary-fixed": "#ffdad8",
+            "on-tertiary-container": "#672624",
+            "outline": "#897271",
+            "surface-variant": "#f0dedd",
+            "on-primary-fixed": "#410007",
+            "inverse-primary": "#ffb3b1",
+            "error": "#ba1a1a",
+            "on-tertiary": "#ffffff",
+            "on-secondary-container": "#67645c",
+            "surface-container": "#fceae8",
+            "error-container": "#ffdad6",
+            "on-background": "#231919",
+            "on-secondary-fixed": "#1d1b16",
+            "primary": "#9f3e41",
+            "surface-tint": "#9f3e41",
+            "on-tertiary-fixed": "#3c0708",
+            "on-primary": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-primary-container": "#711b21",
+            "secondary": "#615e57",
+            "surface-container-lowest": "#ffffff",
+            "tertiary": "#934844",
+            "on-primary-fixed-variant": "#80272b",
+            "secondary-fixed-dim": "#cbc6bd",
+            "on-surface": "#231919",
+            "tertiary-container": "#e88d87",
+            "tertiary-fixed": "#ffdad7",
+            "surface-container-highest": "#f0dedd",
+            "on-secondary-fixed-variant": "#494740",
+            "surface-container-high": "#f6e4e3",
+            "on-surface-variant": "#564241",
+            "secondary-fixed": "#e7e2d8",
+            "inverse-surface": "#382e2d",
+            "on-tertiary-fixed-variant": "#75312e",
+            "on-error-container": "#93000a",
+            "surface-bright": "#fff8f7",
+            "surface-container-low": "#fff0ef",
+            "background": "#fff8f7",
+            "inverse-on-surface": "#ffedeb",
+            "primary-fixed-dim": "#ffb3b1",
+            "on-error": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-lg": "1.5rem",
+            "space-xl": "2rem",
+            "space-xs": "0.5rem",
+            "gutter-mobile": "1rem",
+            "space-2xl": "3rem",
+            "space-2xs": "0.25rem",
+            "space-md": "1rem",
+            "gutter-desktop": "1.5rem",
+            "margin-mobile": "1rem",
+            "space-3xl": "4.5rem",
+            "space-3xs": "0.125rem",
+            "space-sm": "0.75rem",
+            "margin-desktop": "2.5rem"
+          },
+          "fontFamily": {
+            "label-md": ["Archivo Narrow"],
+            "body-lg": ["Anybody"],
+            "headline-lg-mobile": ["Noto Serif"],
+            "headline-sm": ["Noto Serif"],
+            "display-lg-mobile": ["Noto Serif"],
+            "label-lg": ["Archivo Narrow"],
+            "headline-md": ["Noto Serif"],
+            "body-sm": ["Anybody"],
+            "body-md": ["Anybody"],
+            "display-lg": ["Noto Serif"],
+            "label-sm": ["Archivo Narrow"],
+            "headline-lg": ["Noto Serif"]
+          },
+          "fontSize": {
+            "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.06em", "fontWeight": "600" }],
+            "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "headline-lg-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "headline-sm": ["20px", { "lineHeight": "28px", "letterSpacing": "0.005em", "fontWeight": "600" }],
+            "display-lg-mobile": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "400" }],
+            "label-lg": ["14px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "600" }],
+            "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "0em", "fontWeight": "500" }],
+            "body-sm": ["13px", { "lineHeight": "20px", "letterSpacing": "0.015em", "fontWeight": "400" }],
+            "body-md": ["15px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "display-lg": ["56px", { "lineHeight": "64px", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+            "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "700" }],
+            "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.01em", "fontWeight": "500" }]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 22px;
+      width: 22px;
+      border-radius: 50%;
+      background: #450D0D;
+      border: 3px solid #F98383;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(69, 13, 13, 0.25);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface antialiased min-h-screen flex flex-col font-body-md text-body-md" style="background-color: #FCF6EC;">
+<!-- Global Shared Top Navigation Bar -->
+<header class="bg-surface sticky top-0 z-40 w-full px-space-md lg:px-margin-desktop py-space-xs border-b border-outline-variant flex justify-between items-center bg-white/90 backdrop-blur-md">
+<div class="flex items-center gap-space-xl">
+<!-- Product Brand Anchor -->
+<a class="text-headline-md font-headline-md font-medium tracking-tight text-on-surface flex items-center gap-space-xs" href="#">
+<span class="w-3 h-3 rounded-full bg-primary inline-block"></span>
+        EVENTOS
+      </a>
+<!-- Navigation links cluster with deliberate active state -->
+<nav class="hidden md:flex items-center space-x-space-lg">
+<a class="text-secondary hover:text-on-surface font-label-md text-label-md pb-1 transition-colors" href="#">Overview</a>
+<a class="text-secondary hover:text-on-surface font-label-md text-label-md pb-1 transition-colors" href="#">Map</a>
+<a class="text-secondary hover:text-on-surface font-label-md text-label-md pb-1 transition-colors" href="#">Fix Crowd</a>
+<a class="text-primary border-b-2 border-primary font-label-md text-label-md pb-1 font-bold" href="#">Settings</a>
+</nav>
+</div>
+<!-- Trailing Actions & Event Badge -->
+<div class="flex items-center gap-space-md">
+<div class="hidden sm:flex items-center gap-space-xs px-space-sm py-space-2xs rounded bg-surface-container border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">AARPO World Summit</span>
+</div>
+<div class="flex items-center gap-space-xs border-l border-outline-variant pl-space-md">
+<button class="p-space-2xs text-secondary hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Live Sync">
+<span class="material-symbols-outlined text-[20px]" data-icon="sync">sync</span>
+</button>
+<button class="p-space-2xs text-secondary hover:text-on-surface hover:bg-surface-container rounded transition-colors" title="Notifications">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center overflow-hidden ml-space-2xs">
+<img alt="Director of Operations Avatar" class="h-full w-full object-cover" data-alt="A dignified close-up portrait of an Indian male director of operations in a crisp formal linen collar, captured with warm museum lighting and muted natural tones that blend gracefully with a boutique architectural workspace aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVtHcjydKAZD9FQ4krPPWZ_RZ0r64lcGtS4yC0RG2lP2LQuJ9Jb7hKVpp9UpL2IUCnZsrcAD1UTC6lLw_3fdNHZ7FIqoIH9JLOUcrYrxXbjBxAh6kleGw2fxrVOC4eyuCNO3-E_HMyTmlPiwhRM2UBPaHGM761h9kaRWRa_LLyWUX8jsn2hnnvKOGpkct0NlYGudlH-EzQHEmRv9eqJH8_zhu8cU0nPFyeCzwibGDoqPzTv7geFyEL"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Canvas Container -->
+<main class="flex-1 max-w-5xl w-full mx-auto px-gutter-mobile lg:px-margin-desktop py-space-2xl pb-32">
+<!-- Page Header -->
+<div class="mb-space-2xl border-b border-outline-variant/60 pb-space-lg">
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-space-xs">
+<div>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider block mb-space-3xs">Organizer Configuration</span>
+<h1 class="text-headline-lg font-headline-lg text-on-surface text-[#450D0D]">Settings</h1>
+<p class="text-body-md font-body-md text-secondary mt-space-2xs max-w-xl text-[#827473]">
+            Manage event details, crowd warning limits, and who has access.
+          </p>
+</div>
+<div class="inline-flex items-center gap-space-xs text-secondary font-label-md text-label-md bg-white/70 px-space-sm py-space-2xs rounded border border-outline-variant">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="tune">tune</span>
+          Profile: Ultra-Simple
+        </div>
+</div>
+</div>
+<div class="space-y-space-xl">
+<!-- SECTION 1: Event Information -->
+<section class="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-space-xl shadow-[0px_4px_20px_-2px_rgba(69,13,13,0.04)]">
+<div class="flex items-center gap-space-xs mb-space-lg pb-space-xs border-b border-outline-variant/30">
+<span class="material-symbols-outlined text-primary text-[22px]" data-icon="event">event</span>
+<h2 class="text-headline-sm font-headline-sm text-on-surface text-[#450D0D]">Event Information</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-lg">
+<!-- Event Name -->
+<div class="md:col-span-2">
+<label class="block font-label-md text-label-md text-[#450D0D] mb-space-2xs">
+              Event Name
+            </label>
+<input class="w-full bg-white border border-outline-variant rounded px-space-md py-space-sm text-on-surface font-body-md text-body-md focus:border-[#450D0D] focus:ring-1 focus:ring-[#450D0D] transition-colors" type="text" value="AARPO World Summit 2026"/>
+</div>
+<!-- Venue -->
+<div>
+<label class="block font-label-md text-label-md text-[#450D0D] mb-space-2xs">
+              Venue Location
+            </label>
+<div class="relative">
+<input class="w-full bg-white border border-outline-variant rounded px-space-md py-space-sm pl-9 text-on-surface font-body-md text-body-md focus:border-[#450D0D] focus:ring-1 focus:ring-[#450D0D] transition-colors" type="text" value="Mumbai Convention Center"/>
+<span class="material-symbols-outlined absolute left-2.5 top-2.5 text-[18px] text-secondary" data-icon="location_on">location_on</span>
+</div>
+</div>
+<!-- Max Capacity -->
+<div>
+<label class="block font-label-md text-label-md text-[#450D0D] mb-space-2xs">
+              Total Venue Max Capacity
+            </label>
+<div class="relative">
+<input class="w-full bg-white border border-outline-variant rounded px-space-md py-space-sm pl-9 text-on-surface font-body-md text-body-md focus:border-[#450D0D] focus:ring-1 focus:ring-[#450D0D] transition-colors" type="text" value="80,000 visitors"/>
+<span class="material-symbols-outlined absolute left-2.5 top-2.5 text-[18px] text-secondary" data-icon="groups">groups</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: Capacity Limits & Warning Levels -->
+<section class="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-space-xl shadow-[0px_4px_20px_-2px_rgba(69,13,13,0.04)]">
+<div class="flex items-center gap-space-xs mb-space-lg pb-space-xs border-b border-outline-variant/30">
+<span class="material-symbols-outlined text-primary text-[22px]" data-icon="speed">speed</span>
+<h2 class="text-headline-sm font-headline-sm text-on-surface text-[#450D0D]">Capacity Limits &amp; Warning Levels</h2>
+</div>
+<!-- Warning Trigger Slider Card -->
+<div class="bg-surface-container-low border border-outline-variant/40 rounded p-space-lg mb-space-lg">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-space-xs mb-space-sm">
+<div>
+<span class="font-label-md text-label-md text-[#450D0D] font-bold block">When to send warning</span>
+<p class="font-body-sm text-body-sm text-secondary text-[#827473]">Proactive dispatch prompt before physical crowd bottlenecks form</p>
+</div>
+<div class="bg-[#FCF6EC] px-space-md py-space-2xs rounded border border-outline-variant">
+<span class="font-label-lg text-label-lg text-primary font-bold">At 88% full</span>
+<span class="font-label-sm text-label-sm text-secondary ml-1">(14 minutes before lockup)</span>
+</div>
+</div>
+<div class="pt-space-xs">
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-[#9f3e41]" max="95" min="50" type="range" value="88"/>
+<div class="flex justify-between font-label-sm text-label-sm text-secondary mt-space-2xs">
+<span>Relaxed (70%)</span>
+<span class="text-primary font-bold">Current: 88%</span>
+<span>Critical (95%)</span>
+</div>
+</div>
+</div>
+<!-- Station Capacity Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Station A -->
+<div class="border border-outline-variant/50 rounded p-space-md bg-white hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-center mb-space-2xs">
+<span class="font-label-md text-label-md text-secondary">Gate 1-4</span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</div>
+<span class="font-headline-sm text-headline-sm text-[#450D0D] block font-semibold">Station A Limit</span>
+<div class="mt-space-sm flex items-center justify-between border-t border-outline-variant/30 pt-space-xs">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold">19,000</span>
+<span class="font-label-sm text-label-sm text-secondary">visitors max</span>
+</div>
+</div>
+<!-- Station B -->
+<div class="border border-outline-variant/50 rounded p-space-md bg-white hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-center mb-space-2xs">
+<span class="font-label-md text-label-md text-secondary">Plaza Core</span>
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</div>
+<span class="font-headline-sm text-headline-sm text-[#450D0D] block font-semibold">Station B Limit</span>
+<div class="mt-space-sm flex items-center justify-between border-t border-outline-variant/30 pt-space-xs">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold">19,000</span>
+<span class="font-label-sm text-label-sm text-secondary">visitors max</span>
+</div>
+</div>
+<!-- Station C -->
+<div class="border border-outline-variant/50 rounded p-space-md bg-white hover:border-primary/50 transition-colors">
+<div class="flex justify-between items-center mb-space-2xs">
+<span class="font-label-md text-label-md text-secondary">South Promenade</span>
+<span class="w-2 h-2 rounded-full bg-[#827473]"></span>
+</div>
+<span class="font-headline-sm text-headline-sm text-[#450D0D] block font-semibold">Station C Limit</span>
+<div class="mt-space-sm flex items-center justify-between border-t border-outline-variant/30 pt-space-xs">
+<span class="font-body-lg text-body-lg text-on-surface font-semibold">8,000</span>
+<span class="font-label-sm text-label-sm text-secondary">visitors max</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: Alert Settings -->
+<section class="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-space-xl shadow-[0px_4px_20px_-2px_rgba(69,13,13,0.04)]">
+<div class="flex items-center gap-space-xs mb-space-lg pb-space-xs border-b border-outline-variant/30">
+<span class="material-symbols-outlined text-primary text-[22px]" data-icon="crisis_alert">crisis_alert</span>
+<h2 class="text-headline-sm font-headline-sm text-on-surface text-[#450D0D]">Alert Settings</h2>
+</div>
+<div class="space-y-space-md divide-y divide-outline-variant/30">
+<!-- Toggle 1 -->
+<div class="flex items-center justify-between pt-space-xs first:pt-0">
+<div class="pr-space-md">
+<label class="font-body-md text-body-md font-semibold text-on-surface block cursor-pointer" for="toggle-suggest">
+                Automatically suggest crowd fixes when a station gets busy
+              </label>
+<p class="font-body-sm text-body-sm text-secondary text-[#827473]">
+                AI calculates alternate pedestrian pathways and displays ready-to-dispatch recommendations.
+              </p>
+</div>
+<!-- Custom Toggle Switch ON -->
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" id="toggle-suggest" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#F98383]"></div>
+</label>
+</div>
+<!-- Toggle 2 -->
+<div class="flex items-center justify-between pt-space-md">
+<div class="pr-space-md">
+<label class="font-body-md text-body-md font-semibold text-on-surface block cursor-pointer" for="toggle-push">
+                Send push alerts to attendee phones when redirected
+              </label>
+<p class="font-body-sm text-body-sm text-secondary text-[#827473]">
+                Notifies attendee companion apps with revised turn-by-turn routes away from congested gates.
+              </p>
+</div>
+<!-- Custom Toggle Switch ON -->
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" id="toggle-push" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#F98383]"></div>
+</label>
+</div>
+<!-- Toggle 3 -->
+<div class="flex items-center justify-between pt-space-md">
+<div class="pr-space-md">
+<label class="font-body-md text-body-md font-semibold text-on-surface block cursor-pointer" for="toggle-signs">
+                Flip digital signs automatically once approved
+              </label>
+<p class="font-body-sm text-body-sm text-secondary text-[#827473]">
+                Updates venue LED wayfinding boards instantly as soon as an operator confirms a reroute action.
+              </p>
+</div>
+<!-- Custom Toggle Switch ON -->
+<label class="relative inline-flex items-center cursor-pointer shrink-0">
+<input checked="" class="sr-only peer" id="toggle-signs" type="checkbox"/>
+<div class="w-12 h-6 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#F98383]"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- SECTION 4: Team Access -->
+<section class="bg-surface-container-lowest border border-outline-variant/60 rounded-lg p-space-xl shadow-[0px_4px_20px_-2px_rgba(69,13,13,0.04)]">
+<div class="flex flex-col sm:flex-row justify-between sm:items-center gap-space-xs mb-space-lg pb-space-xs border-b border-outline-variant/30">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[22px]" data-icon="badge">badge</span>
+<h2 class="text-headline-sm font-headline-sm text-on-surface text-[#450D0D]">Team Access</h2>
+</div>
+<button class="inline-flex items-center justify-center gap-space-2xs px-space-md py-space-xs rounded border border-outline/30 text-on-surface hover:bg-primary-container/20 font-label-md text-label-md transition-colors text-[#450D0D]" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="person_add">person_add</span>
+            + Add Team Member
+          </button>
+</div>
+<div class="divide-y divide-outline-variant/30">
+<!-- Member 1 -->
+<div class="py-space-md flex items-center justify-between first:pt-0">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden shrink-0">
+<img alt="Dr. Anand Varma Avatar" class="w-full h-full object-cover" data-alt="A dignified close-up portrait of an Indian male director of operations in a crisp formal linen collar, captured with warm museum lighting and muted natural tones that blend gracefully with a boutique architectural workspace aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDffARitK-3yTPrI4r_u87oENoNFv96RC_Klhhx5zqIr3RllIF1oZBPPnMP4kvcjA4C1AvV7CuRSZAFiuqApfnSNajQW93QWvXbVwLzJx2BlcwI6yWki_2_hmWYEpj2JQL37wOuiN_zyf7cC_9enZWr9dU43wsIwFvDZiwfJt47pFnXa6ayWn8YLj7oawHV9n3qHV_6nTzjFb2JiHb4augWWBX7Aydj6I0WHiTJSCeOU-Ab8iwjTc_w"/>
+</div>
+<div>
+<div class="flex items-center gap-space-xs">
+<span class="font-body-md text-body-md font-semibold text-on-surface">Dr. Anand Varma</span>
+<span class="bg-[#FCF6EC] text-primary border border-primary/30 px-space-2xs py-0.5 rounded text-[10px] font-label-sm">YOU</span>
+</div>
+<span class="font-label-md text-label-md text-secondary text-[#827473]">Lead Operations Director</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-secondary hidden sm:inline-block">Full Admin</span>
+<button class="text-secondary hover:text-on-surface p-1">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Member 2 -->
+<div class="py-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden shrink-0">
+<img alt="Priya Nair Avatar" class="w-full h-full object-cover" data-alt="A sharp editorial portrait of an Indian female security supervisor with sleek pulled-back hair and focused expression, set in an architectural command lobby with soft natural light and subtle coral accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD66DZkpd__K967wiiZzWNiESS6AZG8-jhsbQzZS-yqzWgfNKJ8BTAIhUH1eH2BEj_liYD96DvdqsOmo4lqL3nrq23d9AWyE2UtjTxArncubW09oExQ93hSkdaN2nluPnvxKsdIFfhBK_ekZwuhYuIx2XbvGGdqn7sNAhV9PmOEfqCa_-cALqZRMJDd9aF06aHhcwIL041MkVx2DK_OaOGB7VJyX2wQgzyUAExFpbtHhSKZTO_T9IWD"/>
+</div>
+<div>
+<span class="font-body-md text-body-md font-semibold text-on-surface block">Priya Nair</span>
+<span class="font-label-md text-label-md text-secondary text-[#827473]">Gate Dispatch Lead</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-secondary hidden sm:inline-block">Dispatch &amp; Signage</span>
+<button class="text-secondary hover:text-on-surface p-1">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Member 3 -->
+<div class="py-space-md flex items-center justify-between">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden shrink-0">
+<img alt="Marcus Cole Avatar" class="w-full h-full object-cover" data-alt="A portrait of a male transit logistics officer wearing a warm dark wool vest, set against the soft blurred background of an international convention center with calm ambient lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOOe-Yol3ZX-dx0Vc9PYVobE-mMrT55KNI_KbLknBTle0_YzjB7ISZ5SLju2kvMj7ycF7CI5lFmBXNIPrAZCV6siEuWw8z-1l3ktgQESB01xZTkYYNzGmXXoq5MR12OEBeeRqSmqo-rkA9Bk8oZlniQUpkh7fdTAMLCm--GVa4e9hgQTbiI88nGqvqdqBTG7rMlMnr_W0o0gtfOdm17AvDaZwTk-IPUTZrEEHdYKAjHtam74jTltnm"/>
+</div>
+<div>
+<span class="font-body-md text-body-md font-semibold text-on-surface block">Marcus Cole</span>
+<span class="font-label-md text-label-md text-secondary text-[#827473]">Transit Coordinator</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm">
+<span class="font-label-md text-label-md text-secondary hidden sm:inline-block">Telemetry View</span>
+<button class="text-secondary hover:text-on-surface p-1">
+<span class="material-symbols-outlined text-[20px]" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Sticky Bottom Save Actions Bar -->
+<footer class="fixed bottom-0 left-0 right-0 z-30 bg-surface border-t border-outline-variant/70 px-gutter-mobile lg:px-margin-desktop py-space-sm shadow-[0_-8px_24px_-4px_rgba(69,13,13,0.06)] bg-white/95 backdrop-blur-md">
+<div class="max-w-5xl mx-auto flex items-center justify-between">
+<div class="hidden sm:flex items-center gap-space-2xs text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="check_circle">check_circle</span>
+<span>All configuration changes synchronized across core system</span>
+</div>
+<div class="flex items-center gap-space-md ml-auto w-full sm:w-auto justify-end">
+<button class="px-space-lg py-space-xs rounded border border-outline-variant text-[#450D0D] font-label-lg text-label-lg hover:bg-surface-container transition-colors active:scale-98" type="button">
+          Discard
+        </button>
+<button class="bg-[#F98383] hover:bg-[#F76B6B] text-[#450D0D] font-label-lg text-label-lg font-bold px-space-xl py-space-xs rounded shadow-sm hover:shadow transition-all active:scale-95 flex items-center gap-space-2xs" type="button">
+<span class="material-symbols-outlined text-[18px]" data-icon="save">save</span>
+          Save Changes
+        </button>
+</div>
+</div>
+</footer>
+</body></html>

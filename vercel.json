@@ -1,0 +1,39 @@
+﻿{
+  version: 2,
+  name: eventos-platform,
+  cleanUrls: true,
+  trailingSlash: false,
+  routes: [
+    {
+      src: /css/(.*),
+      dest: /css/
+    },
+    {
+      src: /js/(.*),
+      dest: /js/
+    },
+    {
+      src: /(.*),
+      dest: /index.html
+    }
+  ],
+  headers: [
+    {
+      source: /(.*),
+      headers: [
+        {
+          key: X-Content-Type-Options,
+          value: nosniff
+        },
+        {
+          key: X-Frame-Options,
+          value: DENY
+        },
+        {
+          key: Access-Control-Allow-Origin,
+          value: *
+        }
+      ]
+    }
+  ]
+}
