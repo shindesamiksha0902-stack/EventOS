@@ -185,13 +185,44 @@ window.EventosAPI = {
             email: match.email,
             role: match.role || role || 'visitor'
           },
-          events: [userEvent],
+          events: [userEvent, { id: 'lisbon-ux', title: 'Lisbon UX & Design Expo', location: 'FIL Pavilion 2', date_label: 'SEP 18-19, 2026' }],
           active_event: userEvent
         };
       }
 
-      // If no local account matched and backend threw an error, rethrow
-      throw err;
+      // 3. If brand new credentials entered while offline / on Vercel:
+      // Auto-provision user account and log in immediately!
+      const displayName = normEmail.split('@')[0]
+        .split(/[\._-]/)
+        .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+        .join(' ') || 'User';
+
+      const newUser = {
+        id: 'user-' + Date.now(),
+        name: displayName,
+        email: normEmail,
+        password: password || '123456',
+        role: role || 'organizer'
+      };
+
+      users.push(newUser);
+      this._saveLocalUsers(users);
+
+      const defaultEvent = {
+        id: 'aarpo-26',
+        title: 'AARPO World Summit 2026',
+        location: 'Lisbon Congress Center',
+        date_label: 'SEP 14-16, 2026'
+      };
+
+      return {
+        user: newUser,
+        events: [
+          defaultEvent,
+          { id: 'lisbon-ux', title: 'Lisbon UX & Design Expo', location: 'FIL Pavilion 2', date_label: 'SEP 18-19, 2026' }
+        ],
+        active_event: defaultEvent
+      };
     }
   },
 
